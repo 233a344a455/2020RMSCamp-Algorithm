@@ -41,6 +41,7 @@ class simple_train_one_num:
         b = 0
         
         # 用于判断是否所有标签都可以判断正确
+        # Epoch
         train_flag = True
         while train_flag:
             train_flag = False
@@ -73,7 +74,7 @@ class simple_train_one_num:
         # 循环所有数字的组合
         i = 0
         while i < num_len:
-            j = i+1
+            j = i +1
             while j < num_len:
                 # 训练两个数字
                 self.w[num], self.b[num] = self.train_learn_two_num(i, j)
@@ -84,7 +85,7 @@ class simple_train_one_num:
     def predict(self, test_data):
         ans = []
         num_len = len(self.num_kind)
-        for i in test_data:
+        for data in test_data:
             # 计算每两种数字的组合，再根据判断出数字出现次数最多的最终预测结果
             test_ans = np.zeros(num_len)
 
@@ -96,7 +97,7 @@ class simple_train_one_num:
                 num_j = num_i + 1
                 while num_j < num_len:
                     # 计算两个数的判断，大于0为第一数， 小于为第二数
-                    if (np.dot(self.w[num].T, i) + self.b[num]) > 0:
+                    if (np.dot(self.w[num].T, data) + self.b[num]) > 0:
                         # 给对应的数计票
                         test_ans[num_i] += 1
                     else:
@@ -105,6 +106,7 @@ class simple_train_one_num:
                     num_j += 1
                     num += 1
                 num_i += 1
+
             # 统计所有的投票，看哪个数字最多
             num_i = 0
             ans_max = -1
@@ -135,16 +137,11 @@ if __name__ == "__main__":
     simple_train.train_learn()
 
     # 构造测试集
-    test_image_vector = train_image_vector[5000:5100]
-    test_ans = train_label[5000:5100]
+    TEST_IMAGE_NUM = 1000
+    test_image_vector = train_image_vector[5000:5000 + TEST_IMAGE_NUM]
+    test_ans = train_label[5000:5000 + TEST_IMAGE_NUM]
     # 计算预测
     pre_ans = simple_train.predict(test_image_vector)
 
     # 计算正确率
-    i = 0
-    true_num = 0
-    while i < len(test_image_vector):
-        if test_ans[i] == pre_ans[i]:
-            true_num += 1
-        i += 1
-    print(true_num/i)
+    print('Acc: %.3f' %(np.sum(test_ans == pre_ans) / len(test_image_vector)))
