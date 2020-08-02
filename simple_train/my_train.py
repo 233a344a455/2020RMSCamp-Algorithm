@@ -85,7 +85,7 @@ if __name__ == "__main__":
     i = 0
     for epoch in range(3000):
         x = np.random.randn(50) * 3
-        y =  2 * x#np.sin(x*0.2)# + np.random.randn(50)
+        y =  2 * x #np.sin(x*0.2)# + np.random.randn(50)
 
         x = np.expand_dims(np.expand_dims(x, -1), -1)
         y = np.expand_dims(np.expand_dims(y, -1), -1)
@@ -97,9 +97,9 @@ if __name__ == "__main__":
             t = mesloss.forward(t, y_)
             loss.append(t)
             t = mesloss.backward(y_)
-            t = fc2.backward(t, 0.001, 0.001)
+            t = fc2.backward(t, 0.05, 0.01)
             t = sig.backward(t)
-            t = fc1.backward(t, 0.001, 0.001)
+            t = fc1.backward(t, 0.05, 0.01)
 
 
         x = np.linspace(-5, 5, 50)
@@ -109,7 +109,7 @@ if __name__ == "__main__":
         x_ = np.expand_dims(np.expand_dims(x, -1), -1)
         for xx in x_:
             # print('a %s' %fc2.forward(fc1.forward(xx)))
-            y_.append(fc2.forward(fc1.forward(xx)).flatten().item())
+            y_.append(fc2.forward(sig.forward(fc1.forward(xx))).flatten().item())
             # y_.append(fc1.forward(xx).flatten().item())
         
         # print(y_)
