@@ -1,5 +1,6 @@
-import numpy as np
 import time
+import numpy as np
+import random
 
 
 class simple_train_one_num:
@@ -13,6 +14,7 @@ class simple_train_one_num:
         self.num_kind = self.label_rank_num(
             self.train_label)  # 计算标准集中的有的数字种类个数
         self.train_data_dim = int(np.shape(self.train_data)[1])
+        self.batch_size = 1000
 
         # 根据数字种类个数，计算训练矩阵个数， 进行两两分组， 例如有1,2,3数字， 即有3种数字，那么训练矩阵包括 1,2的矩阵， 1,3的矩阵， 2,3的矩阵 共3*(3-1)/2 = 3个矩阵
         self.w = np.zeros(
@@ -42,11 +44,12 @@ class simple_train_one_num:
         b = 0
         
         # 用于判断是否所有标签都可以判断正确
+        dw = db = 0
         for e in range(self.epoch):
             
             pred = 0
             # 循环所有的标签
-            for data, label in zip(self.train_data, self.train_label):
+            for data, label in random.sample(list(zip(self.train_data, self.train_label)), self.batch_size):
                 y = 0
                 # 判断是第一个数字还是第二个数字
                 # 大于0为第一数， 小于为第二数
@@ -56,13 +59,15 @@ class simple_train_one_num:
                     y = -1
 
                 if y != 0:
-
                     # 计算模型值, pred bigger is better
                     pred = y * (np.dot(w.T, data) + b)
                     if  pred <= 0:
-                        w += self.step_w * data * y
-                        b += self.step_b * y
-            
+                        dw += self.step_w * data * y
+                        db += self.step_b * y
+
+            w += dw / self.batch_size
+            b += db / self.batch_size
+            dw = db = 0
             # print('Epoch %s | %.2f' %(e, pred))
 
         return w, b
@@ -88,34 +93,31 @@ class simple_train_one_num:
             # 计算每两种数字的组合，再根据判断出数字出现次数最多的最终预测结果
             test_ans = np.zeros(num_len)
 
-            num_i = 0
-
+            i = 0
             num = 0
             # 遍历所有数字组合
-            while num_i < num_len:
-                num_j = num_i + 1
-                while num_j < num_len:
+            while i < num_len:
+                j = i + 1
+                while j < num_len:
                     # 计算两个数的判断，大于0为第一数， 小于为第二数
                     if (np.dot(self.w[num].T, data) + self.b[num]) > 0:
-                        # 给对应的数计票
-                        test_ans[num_i] += 1
+                        test_ans[i] += 1
                     else:
-                        # 给对应的数计票
-                        test_ans[num_j] += 1
-                    num_j += 1
+                        test_ans[j] += 1
+                    j += 1
                     num += 1
-                num_i += 1
+                i += 1
 
             # 统计所有的投票，看哪个数字最多
-            num_i = 0
-            ans_max = -1
-            ans_i = -1
-            while num_i < num_len:
-                if ans_max < test_ans[num_i]:
-                    ans_max = test_ans[num_i]
-                    ans_i = num_i
-                num_i += 1
-            ans.append(self.num_kind[ans_i])
+            # i = 0
+            # ans_max = -1
+            # ans_i = -1
+            # while i < num_len:
+            #     if ans_max < test_ans[i]:
+            #         ans_max = test_ans[i]
+            #         ans_i = i
+            #     i += 1
+            ans.append(self.num_kind[np.argmax(test_ans)])
         ans = np.array(ans)
         return ans
 
@@ -132,13 +134,12 @@ if __name__ == "__main__":
 
     t0 = time.time()
     simple_train = simple_train_one_num(
-        train_image_vector[0:50000], train_label[0:50000], 2, 0.1, 2.55)
+        train_image_vector[0:50000], train_label[0:50000], 10, step_w=0.1, step_b=2.55)
+    simple_train.train_learn()
     print('Used %.4f s' %(time.time() - t0))
 
-    simple_train.train_learn()
-
     # 构造测试集
-    TEST_IMAGE_NUM = 1000
+    TEST_IMAGE_NUM = 100
     test_image_vector = train_image_vector[50000:50000 + TEST_IMAGE_NUM]
     test_ans = train_label[50000:50000 + TEST_IMAGE_NUM]
     # 计算预测
