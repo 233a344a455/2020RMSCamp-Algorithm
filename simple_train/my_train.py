@@ -13,7 +13,7 @@ class FullConnectedLayer:
         return self.weight * input + self.bias
 
     def backward(self, grad, prev_output, step_w, step_b):
-        """反向传播
+        """反向传播 The headacheing backward func
 
         Args:
             grad(np.array): 梯度数据，shape=(1, out_features)
@@ -21,13 +21,16 @@ class FullConnectedLayer:
             step_w(float): 权重步进率
             step_b(float): 截距步进率
 
+        Returns:
+            (np.array): 传给上一层的梯度
+
         """
-        original_weight = self.weight
+        prev_output_deri = np.expand_dims(np.sum(self.weight, axis=1), axis=1)  # prev_output的导数，用于上传梯度
         weight_deri = prev_output.repeat(self.out_features, axis=1).T   # weight矩阵的导数
         self.weight += weight_deri * grad.repeat(self.in_features, axis=1) * step_w
         self.bias += grad * step_b  # bias的导数为1
 
-        return original_weight
+        return prev_output_deri
 
 
 
