@@ -76,41 +76,41 @@ class SigmoidLayer():
 
 
 if __name__ == "__main__":
-    fc1 = FullConnectedLayer(1, 1)
-    # fc2 = FullConnectedLayer(3, 1)
-    sig = SigmoidLayer(3)
+    fc1 = FullConnectedLayer(1, 10)
+    fc2 = FullConnectedLayer(10, 1)
+    sig = SigmoidLayer(10)
     mesloss = MSELoss()
 
     loss = []
     i = 0
     for epoch in range(3000):
         x = np.random.randn(50) * 3
-        y =  4*x-10#np.sin(x) + np.random.randn(50)
+        y =  2 * x#np.sin(x*0.2)# + np.random.randn(50)
 
         x = np.expand_dims(np.expand_dims(x, -1), -1)
         y = np.expand_dims(np.expand_dims(y, -1), -1)
 
         for i, (x_, y_) in enumerate(zip(x, y)):
             t = fc1.forward(x_)
-            # t = sig.forward(t)
-            # t = fc2.forward(t)
+            t = sig.forward(t)
+            t = fc2.forward(t)
             t = mesloss.forward(t, y_)
             loss.append(t)
             t = mesloss.backward(y_)
-            # t = fc2.backward(t, 1e-3, 1e-3)
-            # t = sig.backward(t)
-            t = fc1.backward(t, 1e-3, 1e-3)
+            t = fc2.backward(t, 0.001, 0.001)
+            t = sig.backward(t)
+            t = fc1.backward(t, 0.001, 0.001)
 
 
         x = np.linspace(-5, 5, 50)
-        y =  4*x-10#np.sin(x)
+        y =  2 * x#np.sin(x*0.2)
 
         y_ = []
         x_ = np.expand_dims(np.expand_dims(x, -1), -1)
         for xx in x_:
             # print('a %s' %fc2.forward(fc1.forward(xx)))
-            # y_.append(fc2.forward(fc1.forward(xx)).flatten().item())
-            y_.append(fc1.forward(xx).flatten().item())
+            y_.append(fc2.forward(fc1.forward(xx)).flatten().item())
+            # y_.append(fc1.forward(xx).flatten().item())
         
         # print(y_)
         plt.plot(x, y, color='green')
