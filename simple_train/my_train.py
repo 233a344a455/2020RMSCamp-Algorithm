@@ -4,7 +4,7 @@ import time
 class FullConnectedLayer:
     def __init__(self, in_features, out_features):
         self.in_features, self.out_features = in_features, out_features
-        self.bias = np.random.random() * 0.1
+        self.bias = np.random.randn((1, out_features)) * 0.1
         self.weight = np.random.randn((out_features, in_features)) * 0.1
 
     def forward(self, input):
@@ -25,12 +25,12 @@ class FullConnectedLayer:
             (np.array): 传给上一层的梯度
 
         """
-        prev_output_deri = np.expand_dims(np.sum(self.weight, axis=1), axis=1)  # prev_output的导数，用于上传梯度
-        weight_deri = prev_output.repeat(self.out_features, axis=1).T   # weight矩阵的导数
+        prev_output_deri = np.sum(self.weight, axis=1, keepdims=True)  # prev_output的导数，用于上传梯度
+        weight_deri = prev_output.repeat(self.out_features, axis=1).T / self.in_features   # weight矩阵的偏导
         self.weight += weight_deri * grad.repeat(self.in_features, axis=1) * step_w
-        self.bias += grad * step_b  # bias的导数为1
+        self.bias += grad.sum * np.sum(step_b, axis=1, keepdims=True)
 
-        return prev_output_deri
+        return prev_output_deri * grad
 
 
 
