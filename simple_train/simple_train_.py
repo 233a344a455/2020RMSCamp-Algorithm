@@ -133,9 +133,8 @@ if __name__ == "__main__":
     t0 = time.time()
     simple_train = simple_train_one_num(
         train_image_vector[0:50000], train_label[0:50000], 2, 0.1, 2.55)
-    print('Used %.4f s' %(time.time() - t0))
-
     simple_train.train_learn()
+    print('Used %.4f s' %(time.time() - t0))
 
     # 构造测试集
     TEST_IMAGE_NUM = 1000

@@ -14,7 +14,7 @@ class simple_train_one_num:
         self.num_kind = self.label_rank_num(
             self.train_label)  # 计算标准集中的有的数字种类个数
         self.train_data_dim = int(np.shape(self.train_data)[1])
-        self.batch_size = 1000
+        self.batch_size = 500
 
         # 根据数字种类个数，计算训练矩阵个数， 进行两两分组， 例如有1,2,3数字， 即有3种数字，那么训练矩阵包括 1,2的矩阵， 1,3的矩阵， 2,3的矩阵 共3*(3-1)/2 = 3个矩阵
         self.w = np.zeros(
@@ -139,7 +139,7 @@ if __name__ == "__main__":
     print('Used %.4f s' %(time.time() - t0))
 
     # 构造测试集
-    TEST_IMAGE_NUM = 100
+    TEST_IMAGE_NUM = 1000
     test_image_vector = train_image_vector[50000:50000 + TEST_IMAGE_NUM]
     test_ans = train_label[50000:50000 + TEST_IMAGE_NUM]
     # 计算预测
