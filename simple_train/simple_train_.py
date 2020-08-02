@@ -3,10 +3,10 @@ import numpy as np
 
 class simple_train_one_num:
     # 初始化， 传入的参数为 data： 训练的数据集， 训练的标签集， 训练的容忍值， 系数步进值， 截距步进值
-    def __init__(self, data, labels, toler, step_w, step_b):
+    def __init__(self, data, labels, epoch, step_w, step_b):
         self.train_data = data  # 训练数据集
         self.train_label = labels  # 训练的标签集
-        self.toler = toler  # 容忍值
+        self.epoch = epoch  # 容忍值
         self.step_w = step_w  # 系数步进值
         self.step_b = step_b  # 截距步进值
         self.num_kind = self.label_rank_num(
@@ -41,11 +41,9 @@ class simple_train_one_num:
         b = 0
         
         # 用于判断是否所有标签都可以判断正确
-        # Epoch
-        train_flag = True
-        while train_flag:
-            train_flag = False
-
+        for e in range(self.epoch):
+            
+            pred = 0
             # 循环所有的标签
             for data, label in zip(self.train_data, self.train_label):
                 y = 0
@@ -58,13 +56,13 @@ class simple_train_one_num:
 
                 if y != 0:
 
-                    # 计算模型值
-                    loss = y * (np.dot(w.T, data) + b)
-                    if  loss <= self.toler:
-                        # print(y * np.dot(w.T, data) + b)
+                    # 计算模型值, pred bigger is better
+                    pred = y * (np.dot(w.T, data) + b)
+                    if  pred <= 0:
                         w += self.step_w * data * y
                         b += self.step_b * y
-                        train_flag = True
+            
+            print('Epoch %s | %.2f' %(e, pred))
 
         return w, b
 
@@ -132,16 +130,16 @@ if __name__ == "__main__":
     train_image_vector = np.reshape(train_image, (60000, 784))
 
     simple_train = simple_train_one_num(
-        train_image_vector[0:5000], train_label[0:5000], 0, 0.1, 2.55)
+        train_image_vector[0:10000], train_label[0:10000], 10, 0.1, 2.55)
 
     simple_train.train_learn()
 
     # 构造测试集
     TEST_IMAGE_NUM = 1000
-    test_image_vector = train_image_vector[5000:5000 + TEST_IMAGE_NUM]
-    test_ans = train_label[5000:5000 + TEST_IMAGE_NUM]
+    test_image_vector = train_image_vector[10000:10000 + TEST_IMAGE_NUM]
+    test_ans = train_label[10000:10000 + TEST_IMAGE_NUM]
     # 计算预测
-    pre_ans = simple_train.predict(test_image_vector)
+    pred_ans = simple_train.predict(test_image_vector)
 
     # 计算正确率
-    print('Acc: %.3f' %(np.sum(test_ans == pre_ans) / len(test_image_vector)))
+    print('Acc: %.3f' %(np.sum(test_ans == pred_ans) / len(test_image_vector)))
