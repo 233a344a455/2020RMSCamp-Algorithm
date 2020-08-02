@@ -1,4 +1,3 @@
-import read_picture  # line:11
 import os  # line:1
 import sys  # line:2
 import time  # line:3
@@ -9,6 +8,7 @@ import tkinter.font as tf  # line:7
 import tkinter.scrolledtext  # line:8
 from link_search import link_search  # line:9
 sys.path.append("../read_picture/")  # line:10
+import read_picture  # line:11
 
 
 class auto_grader:  # line:14
