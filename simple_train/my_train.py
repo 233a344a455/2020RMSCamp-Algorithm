@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import time
 
 class FullConnectedLayer:
@@ -55,28 +56,32 @@ class MSELoss():
         self.prev_input = input
         return np.mean((input - target) ** 2)
 
-    def backward(self, loss):
-        return 2 * (self.prev_input - loss)
+    def backward(self, target):
+        return 2 * (self.prev_input - target)
         
         
 
 
 if __name__ == "__main__":
     fc = FullConnectedLayer(1, 1)
-    fc.weight[0, 0] = 0
-    fc.bias[0, 0] = 0
+    # fc.weight[0, 0] = 0
+    # fc.bias[0, 0] = 0
     print(fc.bias, fc.weight)
-    # mesloss = MSELoss(10)
-    # for _ in range(2):
-    #     x = np.linspace(-100, 100, 50)
-    #     y = x * 2.3 + np.random.randn(50)
+    mesloss = MSELoss(10)
+    loss = []
+    for _ in range(5):
+        x = np.linspace(-10, 10, 50)
+        y = x * 2.3 + np.random.randn(50)
+        # plt.plot(x, y)
+        # plt.show()
 
-    #     x = np.expand_dims(np.expand_dims(x, -1), -1)
-    #     y = np.expand_dims(np.expand_dims(y, -1), -1)
+        x = np.expand_dims(np.expand_dims(x, -1), -1)
+        y = np.expand_dims(np.expand_dims(y, -1), -1)
 
-    #     for x_, y_ in zip(x, y):
-    #         t = fc.forward(x_)
-    #         t = mesloss.forward(t, y_)
-    #         print(t)
-    #         t = mesloss.backward(t)
-    #         t = fc.backward(t, 0.0001, 0.001)
+
+        for x_, y_ in zip(x, y):
+            t = fc.forward(x_)
+            t = mesloss.forward(t, y_)
+            print(t)
+            t = mesloss.backward(t)
+            t = fc.backward(t, 0.00001, 0.00001)
