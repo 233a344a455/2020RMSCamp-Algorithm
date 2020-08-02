@@ -5,8 +5,8 @@ import time
 class FullConnectedLayer:
     def __init__(self, in_features, out_features):
         self.in_features, self.out_features = in_features, out_features
-        self.bias = np.random.randn(out_features, 1)
-        self.weight = np.random.randn(out_features, in_features)
+        self.bias = np.random.randn(out_features, 1) * 0.1
+        self.weight = np.random.randn(out_features, in_features) * 0.1
         self.prev_input = None
 
     def forward(self, input):
@@ -75,15 +75,16 @@ class SigmoidLayer():
 
 
 if __name__ == "__main__":
-    fc1 = FullConnectedLayer(1, 5)
-    fc2 = FullConnectedLayer(5, 1)
-    sig = SigmoidLayer(5)
+    fc1 = FullConnectedLayer(1, 10)
+    fc2 = FullConnectedLayer(10, 1)
+    sig = SigmoidLayer(10)
     mesloss = MSELoss()
 
     loss = []
-    for _ in range(3000):
+    i = 0
+    for epoch in range(3000):
         x = np.linspace(-5, 5, 50)
-        y =  np.sin(x) + np.random.randn(50)
+        y =  4*x#np.sin(x) + np.random.randn(50)
 
         x = np.expand_dims(np.expand_dims(x, -1), -1)
         y = np.expand_dims(np.expand_dims(y, -1), -1)
@@ -94,14 +95,14 @@ if __name__ == "__main__":
             t = fc2.forward(t)
             t = mesloss.forward(t, y_)
             loss.append(t)
-            t = mesloss.backward(t)
-            t = fc2.backward(t, 1e-5, 1e-5)
+            t = mesloss.backward(y_)
+            t = fc2.backward(t, 1e-3, 1e-3)
             t = sig.backward(t)
-            t = fc1.backward(t, 1e-5, 1e-5)
+            t = fc1.backward(t, 1e-3, 1e-3)
 
 
         x = np.linspace(-5, 5, 50)
-        y =  np.sin(x)
+        y =  4*x#np.sin(x)
 
         y_ = []
         x_ = np.expand_dims(np.expand_dims(x, -1), -1)
@@ -111,10 +112,11 @@ if __name__ == "__main__":
             # y_.append(fc1.forward(xx).flatten().item())
         
         # print(y_)
-        plt.plot(x, y, color='green')
-        plt.plot(x, y_, color='red')
-        # plt.plot(loss)
+        # plt.plot(x, y, color='green')
+        # plt.plot(x, y_, color='red')
+        if epoch % 5 == 0:
+            plt.clf()
+            plt.plot(loss)
         plt.pause(0.1)
-        plt.clf()
 
 # plt.show()
