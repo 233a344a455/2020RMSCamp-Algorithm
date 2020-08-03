@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import time
 
 class FullConnectedLayer:
     def __init__(self, in_features, out_features):
@@ -111,7 +110,7 @@ if __name__ == "__main__":
             # print('a %s' %fc2.forward(fc1.forward(xx)))
             y_.append(fc2.forward(sig.forward(fc1.forward(xx))).flatten().item())
             # y_.append(fc1.forward(xx).flatten().item())
-        
+
         # print(y_)
         plt.plot(x, y, color='green')
         plt.plot(x, y_, color='red')

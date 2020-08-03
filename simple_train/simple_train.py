@@ -72,7 +72,9 @@ class simple_train_one_num:
     def predict(self, test_data):
         ans = []
         num_len = len(self.num_kind)
+        # print(test_data.shape)
         for i in test_data:
+
             #计算每两种数字的组合，再根据判断出数字出现次数最多的最终预测结果
             test_ans = np.zeros(num_len)
             
