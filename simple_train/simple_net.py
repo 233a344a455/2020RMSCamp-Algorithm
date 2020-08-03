@@ -22,8 +22,8 @@ class FullConnectedLayer:
     def __init__(self, in_features, out_features, learning_rate):
         self.in_features, self.out_features = in_features, out_features
         self.learning_rate = learning_rate
-        self.bias = np.random.randn(out_features, 1) * 0.1
-        self.weight = np.random.randn(out_features, in_features) * 0.1
+        self.bias = np.random.randn(out_features, 1) # * 0.1
+        self.weight = np.random.randn(out_features, in_features) # * 0.1
         self.prev_inp = None
 
     def forward(self, inp):

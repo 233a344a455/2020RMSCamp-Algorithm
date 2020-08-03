@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 from simple_net import *
 
 net = SimpleNet(MSELoss, layers=[
-    FullConnectedLayer(1, 50, 1e-4),
-    SigmoidLayer(),
-    FullConnectedLayer(50, 5, 1e-4),
-    SigmoidLayer(),
+    FullConnectedLayer(1, 20, 0.3*1e-4),
+    LeakyReLULayer(0.05),
+    FullConnectedLayer(20, 5, 0.3*1e-4),
+    LeakyReLULayer(0.03),
     FullConnectedLayer(5, 1, 1e-4)
 ])
 
@@ -15,7 +15,7 @@ plt.ion()
 z = 0
 for epoch in range(20000):
     x = np.linspace(-20, 20)
-    y = x ** 3 * 0.01 + 5 + np.random.randn(50) * 2
+    y = np.sin(x*0.3)+3 + np.random.randn(50)
     for x_, y_ in random.sample(list(zip(x, y)), 50):
 
         x_, y_ = np.array([[x_]]), np.array([[y_]])
@@ -28,7 +28,7 @@ for epoch in range(20000):
         # grad = fc1.backward(grad, 1*1e-4)
 
         z += 1
-        if z % 50 == 0:
+        if z % 500 == 0:
             print(loss)
             x = np.linspace(-20, 20, 200)
             y = map(lambda x_: net.predict(x_),
@@ -38,7 +38,7 @@ for epoch in range(20000):
             # print(x, y)
             plt.clf()
             plt.plot(x, y, color='red')
-            plt.plot(x, x**3 * 0.01 + 5, color='green')
+            plt.plot(x, np.sin(x*0.3)+3, color='green')
             # plt.show()
             plt.pause(0.01)
 
