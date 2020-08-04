@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
+import pickle
 
 class SimpleNet():
     def __init__(self, loss_func, optimizer, layers=[]):
@@ -201,3 +201,48 @@ class Adam():
         m_hat = self.m[idx] / (1 - self.beta1 ** self.t)
         v_hat = self.v[idx] / (1 - self.beta2 ** self.t)
         return self.lr * m_hat / (v_hat ** 0.5 + self.epislon)
+
+
+# ========================== Utils ==========================
+
+
+def save_network(net, path):
+    with open(path, 'wb') as f:
+        pickle.dump(net, f)
+
+def load_network(path):
+    with open(filename, 'rb') as f:
+        return pickle.load(f)
+
+def one_hot_encode(labels, n_types):
+    return np.eye(10)[labels]
+
+class DataLoader():
+    def __init__(self, data, labels, batch_size, n_epoch):
+        self.data = data
+        self.labels = labels
+        self.batch_size = batch_size
+        self.n_epoch = n_epoch
+
+        self.epoch_size = len(data)
+        self.rand_list = np.arange(self.epoch_size)
+        np.random.shuffle(self.rand_list)
+        self.iter_cnt = 0
+        self.epoch_cnt = 0
+    
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        self.iter_cnt += 1
+        if not self.epoch_cnt < self.n_epoch:
+            raise StopIteration
+
+        if len(self.rand_list) < self.batch_size:
+            self.rand_list = np.arange(self.epoch_size)
+            np.random.shuffle(self.rand_list)
+            self.epoch_cnt += 1
+            self.iter_cnt = 0
+
+        idx_list, self.rand_list = self.rand_list[:self.batch_size], self.rand_list[self.batch_size:]
+        return self.data[idx_list, :], self.labels[idx_list, :]

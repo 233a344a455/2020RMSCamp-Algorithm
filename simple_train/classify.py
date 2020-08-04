@@ -8,36 +8,40 @@ import sys
 sys.path.append("../read_picture/")
 import read_picture
 
-BATCH_SIZE = 10
-EPOCH = 1
+np.seterr(all='raise')
+
+BATCH_SIZE = 50
+EPOCH = 3
 
 data, labels = read_picture.read_image_data('../mnist_data/train-images.idx3-ubyte', '../mnist_data/train-labels.idx1-ubyte')
 data = np.reshape(data, (60000, 784)).astype(np.float128) / 255
-labels = np.eye(10)[labels]
+labels = one_hot_encode(labels, 10)
 
-net = SimpleNet(cross_entropy_loss, Adam(),\
-    layers=[
-        FullConnectedLayer(784, 10),
-        SigmoidLayer(),
-        FullConnectedLayer(10, 10),
-        SigmoidLayer(),
-        FullConnectedLayer(10, 10),
-        SigmoidLayer()
-    ])
+# net = SimpleNet(cross_entropy_loss, Adam(),\
+#     layers=[
+#         FullConnectedLayer(784, 32),
+#         SigmoidLayer(),
+#         FullConnectedLayer(32, 16),
+#         SigmoidLayer(),
+#         FullConnectedLayer(16, 10),
+#         SigmoidLayer()
+#     ])
+net = load_network()
 
-for epoch in range(EPOCH):
-    rand_list = random.sample(range(60000), k=60000)
-    z = 0
-    while True:
-        try:
-            idx_list, rand_list = rand_list[:BATCH_SIZE], rand_list[BATCH_SIZE:]
-        except IndexError:
-            break
-        
-        loss = net.train(data[idx_list, :], labels[idx_list, :])
-        if math.isnan(loss):
-            exit()
+loss_list = []
+plt.ion()
 
-        z += 1
-        if z % 10 == 0:
-            print(loss)
+dataloader = DataLoader(data, labels, BATCH_SIZE, EPOCH)
+
+for pack in dataloader:
+    loss = net.train(*pack)
+    
+    if dataloader.iter_cnt % 20 == 0:
+        print("Epoch %s | Iteration %s | Loss %.4f" %(dataloader.epoch_cnt, dataloader.iter_cnt, loss))
+        # loss_list.append(loss)
+        # plt.plot(loss_list)
+        # plt.show()
+        # plt.pause(0.1)
+        # plt.clf()
+
+save_network(net, 'net1.pkl')
