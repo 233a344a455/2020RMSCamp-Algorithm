@@ -211,7 +211,7 @@ def save_network(net, path):
         pickle.dump(net, f)
 
 def load_network(path):
-    with open(filename, 'rb') as f:
+    with open(path, 'rb') as f:
         return pickle.load(f)
 
 def one_hot_encode(labels, n_types):

@@ -10,8 +10,8 @@ import read_picture
 
 np.seterr(all='raise')
 
-BATCH_SIZE = 50
-EPOCH = 3
+BATCH_SIZE = 100
+EPOCH = 5
 
 data, labels = read_picture.read_image_data('../mnist_data/train-images.idx3-ubyte', '../mnist_data/train-labels.idx1-ubyte')
 data = np.reshape(data, (60000, 784)).astype(np.float128) / 255
@@ -26,7 +26,7 @@ labels = one_hot_encode(labels, 10)
 #         FullConnectedLayer(16, 10),
 #         SigmoidLayer()
 #     ])
-net = load_network()
+net = load_network('net1.pkl')
 
 loss_list = []
 plt.ion()
