@@ -16,7 +16,7 @@ plt.ion()
 z = 0
 for epoch in range(2000000):
     x = np.linspace(-20, 20, 50)
-    y = np.sin(x*0.1)+3 + np.random.randn(50)
+    y = np.sin(x*0.2)-3 + np.random.randn(50)
 
     loss = net.train(x[:, np.newaxis], y[:, np.newaxis])
 
@@ -27,7 +27,7 @@ for epoch in range(2000000):
         plt.clf()
         x = np.linspace(-20, 20, 100)
         plt.plot(x, net.predict(x[:, np.newaxis]), color='red')
-        plt.plot(x, np.sin(x*0.1)+3, color='green')
+        plt.plot(x, np.sin(x*0.2)-3, color='green')
 
         plt.pause(0.01)
 

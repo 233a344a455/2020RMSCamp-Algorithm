@@ -110,6 +110,23 @@ def MSE_loss(pred, target):
     return loss, grad
 
 
+def cross_entropy_loss(pred, target):
+    """
+
+    Args:
+        pred.shape = (batch, n_featuers(n_kinds), 1)
+        target.shape = (batch, n_featuers(n_kinds), 1)
+    
+    Returns:
+        loss (float)
+        gred.shape = (batch, n_featuers(n_kinds), 1)
+
+    """
+    loss = -np.mean(target * np.log(pred) + (1-target) * np.log(1-pred))
+    grad = - target/pred +(1-target)/(1-pred)
+    return loss, grad
+
+
 # ======================== Activation Layers ========================
 
 
