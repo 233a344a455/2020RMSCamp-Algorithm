@@ -90,6 +90,20 @@ class FullConnectedLayer:
         return d_prev_inp
 
 
+class DropoutLayer():
+    def __init__(self, dropout_rate = 0.3):
+        self.dropout_rate = dropout_rate
+        self.filter = None
+    
+    def forward(self, inp):
+        self.filter = np.random.binomial(n=1, p=1-self.dropout_rate, size=inp.shape)
+        return inp * self.filter
+    
+    def backward(self, grad):
+        return grad * self.filter
+
+
+
 # ========================== Loss Functions ==========================
 
 
@@ -142,6 +156,7 @@ class SigmoidLayer():
         sig = 1/(1+np.exp(-self.prev_inp))
         return grad * sig * (1 - sig)
 
+
 class LeakyReLULayer():
     def __init__(self, leak=0.01):
         self.prev_inp = None
@@ -155,6 +170,19 @@ class LeakyReLULayer():
         self.prev_inp[self.prev_inp < 0] = self.leak
         self.prev_inp[self.prev_inp >= 0] = 1
         return grad * self.prev_inp
+
+
+class SoftmaxLayer():
+    def __init__(self):
+        self.prev_inp = None
+    
+    def forward(self, inp):
+        self.prev_inp = inp
+        exp = np.exp(x - x.max(axis=1, keepdims=True))
+        return exp / np.sum(exp, axis=1, keepdims=True)
+    
+    def backward(self, grad):
+        pass
 
 
 # ========================== Optimizers ==========================
@@ -179,9 +207,6 @@ class Adam():
         self.beta1 = beta1
         self.beta2 = beta2
         self.epislon = epislon
-        # self.t = None
-        # self.m = None
-        # self.v = None
 
     def link_layers_params(self, layers):
         self.maintaining_layers = [layer for layer in layers if isinstance(layer, FullConnectedLayer)]
@@ -216,6 +241,7 @@ def load_network(path):
 
 def one_hot_encode(labels, n_types):
     return np.eye(10)[labels]
+
 
 class DataLoader():
     def __init__(self, data, labels, batch_size, n_epoch):
