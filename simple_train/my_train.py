@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from simple_net import *
 
-net = SimpleNet(MSE_loss, BGD(learning_rate=5 * 1e-3),\
+net = SimpleNet(MSE_loss, Adam(),\
                                 layers=[
                                     FullConnectedLayer(1, 20),
                                     SigmoidLayer(),

@@ -84,6 +84,8 @@ class FullConnectedLayer:
         d_prev_inp = np.sum(self.weight * grad, axis=1, keepdims=True).transpose(0, 2, 1)  # prev_output的导数，用于上传梯度
         self.d_weight = self.prev_inp.repeat(self.out_features, axis=-1).transpose(0, 2, 1) * grad.repeat(self.in_features, axis=-1)  # weight矩阵的偏导
         self.d_bias = grad
+        self.d_weight = np.mean(self.d_weight, axis=0, keepdims=True)
+        self.d_bias = np.mean(self.d_bias, axis=0, keepdims=True)
 
         return d_prev_inp
 
@@ -124,7 +126,7 @@ class SigmoidLayer():
         return grad * sig * (1 - sig)
 
 class LeakyReLULayer():
-    def __init__(self, leak):
+    def __init__(self, leak=0.01):
         self.prev_inp = None
         self.leak = leak
 
@@ -142,13 +144,43 @@ class LeakyReLULayer():
 
 
 class BGD():
-    def __init__(self, learning_rate):
-        self.learning_rate = learning_rate
+    def __init__(self, lr):
+        self.lr = lr
     
     def link_layers_params(self, layers):
         self.maintaining_layers = [layer for layer in layers if isinstance(layer, FullConnectedLayer)]
 
     def step(self):
         for layer in self.maintaining_layers:
-            layer.weight -= np.mean(layer.d_weight, axis=0, keepdims=True) * self.learning_rate
-            layer.bias -= np.mean(layer.d_bias, axis=0, keepdims=True) * self.learning_rate
+            layer.weight -= layer.d_weight * self.lr
+            layer.bias -= layer.d_bias * self.lr
+
+
+class Adam():
+    def __init__(self, lr=0.001, beta1=0.9, beta2=0.999, epislon=1e-8):
+        self.lr = lr
+        self.beta1 = beta1
+        self.beta2 = beta2
+        self.epislon = epislon
+        # self.t = None
+        # self.m = None
+        # self.v = None
+
+    def link_layers_params(self, layers):
+        self.maintaining_layers = [layer for layer in layers if isinstance(layer, FullConnectedLayer)]
+        self.t = 0
+        self.m= [0.] * (2 * len(self.maintaining_layers))
+        self.v = [0.] * (2 * len(self.maintaining_layers))
+    
+    def step(self):
+        self.t += 1
+        for i, layer in enumerate(self.maintaining_layers):
+            layer.weight -= self.calculate_delta(layer.d_weight, i*2)
+            layer.bias -= self.calculate_delta(layer.d_bias, i*2 + 1)
+
+    def calculate_delta(self, grad, idx):
+        self.m[idx] = self.beta1 * self.m[idx] + (1 - self.beta1) * grad
+        self.v[idx] = self.beta2 * self.v[idx] + (1 - self.beta2) * (grad ** 2)
+        m_hat = self.m[idx] / (1 - self.beta1 ** self.t)
+        v_hat = self.v[idx] / (1 - self.beta2 ** self.t)
+        return self.lr * m_hat / (v_hat ** 0.5 + self.epislon)
