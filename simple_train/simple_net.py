@@ -45,7 +45,7 @@ class SimpleNet():
         return loss
 
 
-class FullConnectedLayer:
+class FullConnectedLayer():
     def __init__(self, in_features, out_features):
         """
 
@@ -61,7 +61,7 @@ class FullConnectedLayer:
         self.d_bias = None
 
     def forward(self, inp):
-        """正向传播
+        """
 
         inp.shape = (batch, in_features, 1)
 
@@ -70,15 +70,14 @@ class FullConnectedLayer:
         return self.weight @ inp + self.bias
 
     def backward(self, grad):
-        """反向传播 
-        The headaching backward func !!!
+        """The headaching backward func !!!
 
         Args:
-            grad(np.array): 梯度数据(Z_curr)，shape=(batch, out_features, 1)
-            prev_inp(np.array): 前一层的输出(A_prev), shape=(batch, in_features, 1)
+            grad(np.array): (Z_curr) shape=(batch, out_features, 1)
+            prev_inp(np.array): (A_prev) shape=(batch, in_features, 1)
 
         Returns:
-            (np.array): 传给上一层的梯度
+            (np.array): shape=(batch, in_features, 1)
 
         """
         d_prev_inp = np.sum(self.weight * grad, axis=1, keepdims=True).transpose(0, 2, 1)  # prev_output的导数，用于上传梯度
@@ -101,6 +100,61 @@ class DropoutLayer():
     
     def backward(self, grad):
         return grad * self.filter
+
+
+# class BatchNormLayer():
+#     def __init__(self, n_features, eps=1e-5, momentum=0.9):
+#         self.eps = eps
+#         self.momentum = momentum
+#         self.n_featuers = n_featuers
+
+#         self.gamma = np.zeros((n_featuers, 1))
+#         self.beta = np.zeros((n_featuers, 1))
+#         self.running_mean = 0
+#         self.running_var = 0
+        
+#         self.out_ = None
+#         self.prev_inp = None
+#         self.sample_mean = None
+#         self.sample_var = None
+#         self.d_gamma = None
+#         self.d_beta = None
+
+#     def forward(inp, train):
+#         inp = inp[...,0]
+#         self.prev_inp = inp
+        
+#         if train:
+#             self.sample_mean = np.mean(inp, axis=0)
+#             self.sample_var = np.var(inp, axis=0)
+#             self.out_ = (inp - self.sample_mean) / np.sqrt(self.sample_var + self.eps)
+#             self.running_mean = self.momentum * self.running_mean + (1 - self.momentum) * self.sample_mean
+#             self.running_var = self.momentum * self.running_var + (1 - self.momentum) * self.sample_var
+#             out = self.gamma * self.out_ + self.beta
+#         else:
+#             scale = self.gamma / np.sqrt(self.running_var + self.eps)
+#             out = inp * scale + (self.beta - self.running_mean * scale)
+
+#         return out[...,np.newaxis]
+
+#     def backward(grad):
+#         grad = grad[...,0]
+
+#         N = self.prev_inp.shape[0]
+#         dout_ = self.gamma * grad
+#         dvar = np.sum(dout_ * (self.prev_inp - self.sample_mean) * -0.5 * (self.sample_var + self.eps) ** -1.5, axis=0)
+#         dx_ = 1 / np.sqrt(self.sample_var + self.eps)
+#         dvar_ = 2 * (self.prev_inp - self.sample_mean) / N
+
+#         di = dout_ * dx_ + dvar * dvar_
+#         dmean = -1 * np.sum(di, axis=0)
+#         dmean_ = np.ones_like(self.prev_inp) / N
+
+#         dx = di + dmean * dmean_
+#         self.d_gamma = np.sum(grad * self.out_, axis=0)
+#         self.d_beta = np.sum(grad, axis=0)
+
+#         return dx[...,np.newaxis]
 
 
 
@@ -228,7 +282,7 @@ class Adam():
         self.epislon = epislon
 
     def link_layers_params(self, layers):
-        self.maintaining_layers = [layer for layer in layers if isinstance(layer, FullConnectedLayer)]
+        self.maintaining_layers = [layer for layer in layers if isinstance(layer, (FullConnectedLayer, ))]
         self.t = 0
         self.m= [0.] * (2 * len(self.maintaining_layers))
         self.v = [0.] * (2 * len(self.maintaining_layers))
