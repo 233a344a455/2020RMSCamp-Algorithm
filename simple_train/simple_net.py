@@ -54,8 +54,8 @@ class FullConnectedLayer:
 
         """
         self.in_features, self.out_features = in_features, out_features
-        self.bias = np.random.randn(1, out_features, 1) * 0.1
-        self.weight = np.random.randn(1, out_features, in_features) * 0.1
+        self.bias = np.random.randn(1, out_features, 1) / np.sqrt(in_features / 2)
+        self.weight = np.random.randn(1, out_features, in_features) / np.sqrt(in_features / 2)
         self.prev_inp = None
         self.d_weight = None
         self.d_bias = None
@@ -175,6 +175,19 @@ class LeakyReLULayer():
         return grad * self.prev_inp
 
 
+class ReLULayer():
+    def __init__(self, leak=0.01):
+        self.prev_inp = None
+        self.leak = leak
+
+    def forward(self, inp):
+        self.prev_inp = inp
+        return np.maximum(inp, 0)
+    
+    def backward(self, grad):
+        return grad * (self.prev_inp >= 0)
+
+
 class SoftmaxLayer():
     def __init__(self):
         self.s = None
@@ -246,7 +259,10 @@ def load_network(path):
         return pickle.load(f)
 
 def one_hot_encode(labels, n_types):
-    return np.eye(10)[labels]
+    return np.eye(n_labels)[labels]
+
+def one_hot_decode(pred):
+    return np.argmax(pred, axis=1)
 
 
 class DataLoader():

@@ -10,48 +10,52 @@ import read_picture
 
 # np.seterr(all='raise')
 
-BATCH_SIZE = 5
-EPOCH = 3
+BATCH_SIZE = 32
+EPOCH = 0
 
 loss_list = []
-plt.ion()
+acc_list = []
+# plt.ion()
 
-net = SimpleNet(cross_entropy_loss, Adam(lr=0.003),\
-    layers=[
-        FullConnectedLayer(784, 32),
-        LeakyReLULayer(),
-        FullConnectedLayer(32, 32),
-        # DropoutLayer(0.3),
-        LeakyReLULayer(leak=0),
-        FullConnectedLayer(32, 10),
-        # DropoutLayer(0.3),
-        SoftmaxLayer(),
-        FullConnectedLayer(10, 10),
-        SoftmaxLayer()
-    ])
+# net = SimpleNet(cross_entropy_loss, Adam(),\
+#     layers=[
+#         FullConnectedLayer(784, 100),
+#         DropoutLayer(0.3),
+#         ReLULayer(),
+#         FullConnectedLayer(100, 100),
+#         DropoutLayer(0.3),
+#         ReLULayer(),
+#         FullConnectedLayer(100, 10),
+#         SoftmaxLayer()
+#     ])
 
-# net = load_network('net3.pkl')
+net = load_network('nets/net_128-128_98.1.pkl')
 
 data, labels = read_picture.read_image_data('../mnist_data/train-images.idx3-ubyte', '../mnist_data/train-labels.idx1-ubyte')
 data = np.reshape(data, (60000, 784)).astype(np.float) / 255
 labels = one_hot_encode(labels, 10)
 
+dataloader = DataLoader(data[:55000], labels[:55000], BATCH_SIZE, EPOCH)
 
-dataloader = DataLoader(data[:50000], labels[:50000], BATCH_SIZE, EPOCH)
+def eval(eval_data, eval_labels):
+    a = np.argmax(eval_labels, axis=1)
+    b = np.argmax(net.predict(eval_data), axis=1)
+    return np.mean(a==b)
 
 for pack in dataloader:
     loss = net.train(*pack)
     
-    if dataloader.iter_cnt % 20 == 0:
-        print("Epoch %s | Iteration %s | Loss %.4f" %(dataloader.epoch_cnt, dataloader.iter_cnt, loss))
-        # loss_list.append(loss)
-        # plt.plot(loss_list)
+    net.optimizer.lr = 0.01 + 0.01 *  np.cos(dataloader.iter_cnt / ( 55000 / BATCH_SIZE ) * 2 * np.pi)
+    if dataloader.iter_cnt % 50 == 0:
+        acc = eval(data[55000:55100], labels[55000:55100])
+        print("Epoch %s | Iteration %s | Loss %.4f | Acc %s" %(dataloader.epoch_cnt, dataloader.iter_cnt, loss, acc))
+        loss_list.append(loss)
+        acc_list.append(acc)
+        # plt.plot(loss_list, color='blue')
+        # plt.plot(acc_list, color='yellow')
         # plt.show()
-        # plt.pause(0.1)
+        # plt.pause(0.01)
         # plt.clf()
 
-a = np.argmax(labels[50000:], axis=1)
-b = np.argmax(net.predict(data[50000:]), axis=1)
-print(np.mean(a==b))
 
-save_network(net, 'net3.pkl')
+save_network(net, 'net.pkl')
