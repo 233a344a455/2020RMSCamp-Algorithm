@@ -8,7 +8,7 @@ class SimpleNet():
         self.optimizer = optimizer
         self.optimizer.link_layers_params(self.layers)
 
-    def predict(self, data, return_vec=False):
+    def predict(self, data, train=False):
         """
 
         Args:
@@ -19,9 +19,9 @@ class SimpleNet():
 
         """
         data = np.expand_dims(data, axis=-1) # (batch, in_features) -> (batch, in_features, 1)
-        for layer in self.layers:
+        for layer in [l for l in self.layers if not (isinstance(l, DropoutLayer) and not train)]:
             data = layer.forward(data)
-        if return_vec:
+        if train:
             return data
         else:
             return np.squeeze(data, axis=-1) # (batch, out_features, 1) -> (batch, out_features)
@@ -38,7 +38,7 @@ class SimpleNet():
 
         """
         target = np.expand_dims(target, axis=-1)    # (batch, out_features) -> (batch, out_features, 1)
-        loss, grad = self.loss_func(self.predict(data, return_vec=True), target)
+        loss, grad = self.loss_func(self.predict(data, train=True), target)
         for layer in reversed(self.layers):
             grad = layer.backward(grad)
         self.optimizer.step()
@@ -54,8 +54,8 @@ class FullConnectedLayer:
 
         """
         self.in_features, self.out_features = in_features, out_features
-        self.bias = np.random.randn(1, out_features, 1) # * 0.1
-        self.weight = np.random.randn(1, out_features, in_features) # * 0.1
+        self.bias = np.random.randn(1, out_features, 1) * 0.1
+        self.weight = np.random.randn(1, out_features, in_features) * 0.1
         self.prev_inp = None
         self.d_weight = None
         self.d_bias = None
@@ -136,8 +136,11 @@ def cross_entropy_loss(pred, target):
         gred.shape = (batch, n_featuers(n_kinds), 1)
 
     """
-    loss = -np.mean(target * np.log(pred) + (1-target) * np.log(1-pred))
-    grad = - target/pred +(1-target)/(1-pred)
+    loss = target * np.log(pred) + (1-target) * np.log(1-pred)
+    loss[np.logical_or(np.isnan(loss), np.isinf(loss))] = 0.
+    loss = -np.mean(loss)
+    grad = -target/pred +(1-target)/(1-pred)
+    grad[np.logical_or(np.isnan(grad), np.isinf(grad))] = 0.
     return loss, grad
 
 
@@ -174,15 +177,18 @@ class LeakyReLULayer():
 
 class SoftmaxLayer():
     def __init__(self):
-        self.prev_inp = None
+        self.s = None
     
     def forward(self, inp):
-        self.prev_inp = inp
-        exp = np.exp(x - x.max(axis=1, keepdims=True))
-        return exp / np.sum(exp, axis=1, keepdims=True)
+        inp -= np.max(inp, axis=1, keepdims=True)
+        self.s = np.exp(inp) / np.sum(np.exp(inp), axis=1, keepdims=True)
+        # self.s[self.s <= 0] = 1e-12
+        # self.s[self.s >= 1] = 1 - 1e-12
+        return self.s
     
     def backward(self, grad):
-        pass
+        d =  self.s * np.eye(self.s.shape[1]) - self.s * self.s.transpose(0, 2, 1)
+        return d @ grad
 
 
 # ========================== Optimizers ==========================

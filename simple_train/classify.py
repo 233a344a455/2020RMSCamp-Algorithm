@@ -10,24 +10,24 @@ import read_picture
 
 # np.seterr(all='raise')
 
-BATCH_SIZE = 100
-EPOCH = 5
+BATCH_SIZE = 5
+EPOCH = 3
 
 loss_list = []
 plt.ion()
 
-net = SimpleNet(cross_entropy_loss, Adam(lr=0.008),\
+net = SimpleNet(cross_entropy_loss, Adam(lr=0.003),\
     layers=[
         FullConnectedLayer(784, 32),
-        SigmoidLayer(),
-        FullConnectedLayer(32, 16),
+        LeakyReLULayer(),
+        FullConnectedLayer(32, 32),
         # DropoutLayer(0.3),
-        SigmoidLayer(),
-        FullConnectedLayer(16,10),
+        LeakyReLULayer(leak=0),
+        FullConnectedLayer(32, 10),
         # DropoutLayer(0.3),
-        SigmoidLayer(),
+        SoftmaxLayer(),
         FullConnectedLayer(10, 10),
-        SigmoidLayer()
+        SoftmaxLayer()
     ])
 
 # net = load_network('net3.pkl')
