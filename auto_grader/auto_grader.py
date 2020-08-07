@@ -1,288 +1,287 @@
-import os  # line:1
-import sys  # line:2
-import time  # line:3
-import random  # line:4
-import _thread  # line:5
-import tkinter as tk  # line:6
-import tkinter.font as tf  # line:7
-import tkinter.scrolledtext  # line:8
-from link_search import link_search  # line:9
-sys.path.append("../read_picture/")  # line:10
-import read_picture  # line:11
+import os  #line:1
+import sys  #line:2
+import time  #line:3
+import random  #line:4
+import _thread  #line:5
+import tkinter as tk  #line:6
+import tkinter.font as tf  #line:7
+import tkinter.scrolledtext  #line:8
+from link_search import link_search  #line:9
+sys.path.append("../read_picture/")  #line:10
+import read_picture  #line:11
 
 
-class auto_grader:  # line:14
-    def __init__(self, enable_ui=True):  # line:15
-        if enable_ui:  # line:16
-            _thread.start_new_thread(self.ui, tuple())  # line:17
-            time.sleep(1)  # line:18
-        OOO00O00O00OO000O = '../mnist_data/t10k-images.idx3-ubyte'  # line:19
-        O0O00000OOOOOOOO0 = '../mnist_data/t10k-labels.idx1-ubyte'  # line:20
-        self.ans = self.random_image(OOO00O00O00OO000O, O0O00000OOOOOOOO0)  # line:21
-        # self.load_images()  # line:22
-        self.ls = link_search(self.ans)  # line:23
-        self.scores = [50, 20, 10, 0, -10, -100, -100]  # line:24
-        self.doublescores = [100, 20, 10, 0]  # line:25
-        self.__O0OO0OO0O00OOOO00 = 0  # line:27
-        self.round = 0  # line:28
-        self.enable_ui = enable_ui  # line:29
-    
-    def get_ans(self):
-        return self.ans
+class auto_grader:  #line:14
+    def __init__(self, enable_ui=True):  #line:15
+        O000OO00OOO0OO0OO = '../mnist_data/t10k-images.idx3-ubyte'  #line:19
+        O0O00OOOO00O00OO0 = '../mnist_data/t10k-labels.idx1-ubyte'  #line:20
+        self.map_ = self.random_image(
+            O000OO00OOO0OO0OO, O0O00OOOO00O00OO0)  #line:21
+        self.ls = link_search(self.map_)  #line:23
+        self.scores = [50, 20, 10, 0, -10, -100, -100]  #line:24
+        self.doublescores = [100, 20, 10, 0]  #line:25
+        self.__O00O00O0OO00000OO = 0  #line:27
+        self.round = 0  #line:28
+        self.enable_ui = enable_ui  #line:29
+        if enable_ui:  #line:16
+            _thread.start_new_thread(self.ui, tuple())  #line:17
+            time.sleep(1)  #line:18
+            self.load_images()  #line:22
 
-    def random_image(O0O0OO0OOOO0OO0OO, OOO0O0OO00OOO0000,
-                     OOOOOOO0000000OO0):  # line:31
-        OO0O0OOO0OOOO00OO, O0OOO0000000OO0OO = read_picture.read_image_data(
-            OOO0O0OO00OOO0000, OOOOOOO0000000OO0)  # line:33
-        OO0O0OO0O0O000000 = random.sample(range(0, len(OO0O0OOO0OOOO00OO)),
-                                          32)  # line:34
-        print('随机取样完成')  # line:35
-        OO00O000O0O000OOO = dict()  # line:36
-        for O00O00O0OOO0OOOO0 in OO0O0OO0O0O000000:  # line:37
-            OO00O000O0O000OOO[O00O00O0OOO0OOOO0] = random.randint(0,
-                                                                  2)  # line:38
-        for OO0OOOO0OO0OO00O0 in range(len(OO0O0OO0O0O000000)):  # line:39
-            O00O0O0OOO0OOO000 = O0OOO0000000OO0OO[
-                OO0O0OO0O0O000000[OO0OOOO0OO0OO00O0]]  # line:40
-            for O0OOO0OO00O000000 in range(
+    def get_map(self):
+        return self.map_
+
+    def random_image(O000O0OOO0OOOO000, O0OOOO00OO0O00000,
+                     OOO0OOO0OO00000OO):  #line:31
+        OO00OOO00OO00O0O0, O0000O000000O000O = read_picture.read_image_data(
+            O0OOOO00OO0O00000, OOO0OOO0OO00000OO)  #line:33
+        O00O000O00000O00O = random.sample(range(0, len(OO00OOO00OO00O0O0)),
+                                          32)  #line:34
+        print('随机取样完成')  #line:35
+        O0OOO00OO0O00O000 = dict()  #line:36
+        for OO0OO0OOOO0OOO0OO in O00O000O00000O00O:  #line:37
+            O0OOO00OO0O00O000[OO0OO0OOOO0OOO0OO] = random.randint(0,
+                                                                  2)  #line:38
+        for O0000O0O0O0O000O0 in range(len(O00O000O00000O00O)):  #line:39
+            OOO0O000000O000OO = O0000O000000O000O[
+                O00O000O00000O00O[O0000O0O0O0O000O0]]  #line:40
+            for OOO0000OOO0OOOO00 in range(
                     random.randint(0,
-                                   len(OO0O0OOO0OOOO00OO) // 2),
-                    len(OO0O0OOO0OOOO00OO)):  # line:43
-                if O0OOO0000000OO0OO[
-                        O0OOO0OO00O000000] == O00O0O0OOO0OOO000:  # line:44
-                    OO0O0OO0O0O000000.append(O0OOO0OO00O000000)  # line:45
-                    OO00O000O0O000OOO[O0OOO0OO00O000000] = OO00O000O0O000OOO[
-                        OO0O0OO0O0O000000[OO0OOOO0OO0OO00O0]]  # line:46
-                    break  # line:47
-        random.shuffle(OO0O0OO0O0O000000)  # line:48
-        OOO00O0OO0O000OOO = list()  # line:50
-        for OO0OOOO0OO0OO00O0 in range(len(OO0O0OO0O0O000000)):  # line:51
-            O00O00O0OOO0OOOO0 = OO0O0OO0O0O000000[OO0OOOO0OO0OO00O0]  # line:52
-            OOO0O0OO0O00O00O0 = OO0O0OOO0OOOO00OO[O00O00O0OOO0OOOO0]  # line:53
-            O00O0O0OOO0OOO000 = O0OOO0000000OO0OO[O00O00O0OOO0OOOO0]  # line:54
-            OO00OOOOOO0000O0O = OO00O000O0O000OOO[O00O00O0OOO0OOOO0]  # line:55
-            read_picture.image_save(OOO0O0OO0O00O00O0, OO00OOOOOO0000O0O,
+                                   len(OO00OOO00OO00O0O0) // 2),
+                    len(OO00OOO00OO00O0O0)):  #line:43
+                if O0000O000000O000O[
+                        OOO0000OOO0OOOO00] == OOO0O000000O000OO and OOO0000OOO0OOOO00 not in O0OOO00OO0O00O000:  #line:44
+                    O00O000O00000O00O.append(OOO0000OOO0OOOO00)  #line:45
+                    O0OOO00OO0O00O000[OOO0000OOO0OOOO00] = O0OOO00OO0O00O000[
+                        O00O000O00000O00O[O0000O0O0O0O000O0]]  #line:46
+                    break  #line:47
+        random.shuffle(O00O000O00000O00O)  #line:48
+        OO00O0O00O0OO0OOO = list()  #line:50
+        for O0000O0O0O0O000O0 in range(len(O00O000O00000O00O)):  #line:51
+            OO0OO0OOOO0OOO0OO = O00O000O00000O00O[O0000O0O0O0O000O0]  #line:52
+            OO00OOO0OO00OOOOO = OO00OOO00OO00O0O0[OO0OO0OOOO0OOO0OO]  #line:53
+            OOO0O000000O000OO = O0000O000000O000O[OO0OO0OOOO0OOO0OO]  #line:54
+            O000000O00O0OO0O0 = O0OOO00OO0O00O000[OO0OO0OOOO0OOO0OO]  #line:55
+            read_picture.image_save(OO00OOO0OO00OOOOO, O000000O00O0OO0O0,
                                     "../auto_grader/image/" +
-                                    str(OO0OOOO0OO0OO00O0) + ".png")  # line:57
-            OOO00O0OO0O000OOO.append([OO00OOOOOO0000O0O,
-                                      O00O0O0OOO0OOO000])  # line:58
-        print('图片显示完毕')  # line:59
-        return OOO00O0OO0O000OOO  # line:60
+                                    str(O0000O0O0O0O000O0) + ".png")  #line:57
+            OO00O0O00O0OO0OOO.append([O000000O00O0OO0O0,
+                                      OOO0O000000O000OO])  #line:58
+        print('图片显示完毕')  #line:59
+        return OO00O0O00O0OO0OOO  #line:60
 
-    def index(O000O00OOO0O0O0O0, O0O000OO0O000O00O,
-              OOOO00OO00O0OO000):  # line:62
-        return O0O000OO0O000O00O * 8 + OOOO00OO00O0OO000  # line:63
+    def index(OOOOO0O00000O0000, O0OO000OOOOO000O0,
+              O0OO00OOO0000OOOO):  #line:62
+        return O0OO000OOOOO000O0 * 8 + O0OO00OOO0000OOOO  #line:63
 
-    def ui(OOOO00OO0O00OOO00):  # line:65
-        OOOO00OO0O00OOO00.blue = '#00BFFF'  # line:66
-        OOOO00OO0O00OOO00.orange = 'orange'  # line:67
-        OOOO00OO0O00OOO00.gray = '#3d3a3a'  # line:68
-        OOOO00OO0O00OOO00.right_color = '#00FF00'  # line:69
-        OOOO00OO0O00OOO00.wrong_color = 'red'  # line:70
-        OOOO00OO0O00OOO00.unselected = 'white'  # line:71
-        OOOO00OO0O00OOO00.selected = OOOO00OO0O00OOO00.orange  # line:72
-        O00OOO0OOOOOOO0OO = tk.Tk()  # line:74
-        O00OOO0OOOOOOO0OO.title(
-            ' RoboMaster 2020 Summer Camp Algorithm AutoGrader')  # line:75
-        # O00OOO0OOOOOOO0OO.iconbitmap('../auto_grader/favicon.ico')  #line:76
-        O00OOO0OOOOOOO0OO.geometry('1000x650')  # line:77
-        O00OOO0OOOOOOO0OO["background"] = 'white'  # line:78
-        O00OOO0OOOOOOO0OO.resizable(0, 0)  # line:79
-        OO0OOO00OOOOO0O00 = tk.Frame(O00OOO0OOOOOOO0OO,
-                                     bg=OOOO00OO0O00OOO00.blue)  # line:81
-        OO0OOO00OOOOO0O00.place(height=5, relwidth=0.25)  # line:82
-        O0OO0O0OO0O00O00O = tk.Frame(O00OOO0OOOOOOO0OO,
-                                     bg=OOOO00OO0O00OOO00.orange)  # line:83
-        O0OO0O0OO0O00O00O.place(relx=0.25, height=5, relwidth=0.75)  # line:84
-        OO0O00O0O00OOOOOO = tk.PhotoImage(
-            file='../auto_grader/ROBOMASTER.png')  # line:86
-        O00OO0000O000000O = tk.Label(O00OOO0OOOOOOO0OO,
-                                     image=OO0O00O0O00OOOOOO,
-                                     bg='white')  # line:87
-        O00OO0000O000000O.place(x=28, y=25)  # line:88
-        OOOOOO0OO0O0OOOOO = tk.Frame(O00OOO0OOOOOOO0OO, bg='white')  # line:90
-        OOOOOO0OO0O0OOOOO.place(x=25, y=81, height=546, width=546)  # line:91
-        OOOO00OO0O00OOO00.score_label = tk.Label(O00OOO0OOOOOOO0OO,
+    def ui(OOO00O000OO00OOOO):  #line:65
+        OOO00O000OO00OOOO.blue = '#00BFFF'  #line:66
+        OOO00O000OO00OOOO.orange = 'orange'  #line:67
+        OOO00O000OO00OOOO.gray = '#3d3a3a'  #line:68
+        OOO00O000OO00OOOO.right_color = '#00FF00'  #line:69
+        OOO00O000OO00OOOO.wrong_color = 'red'  #line:70
+        OOO00O000OO00OOOO.unselected = 'white'  #line:71
+        OOO00O000OO00OOOO.selected = OOO00O000OO00OOOO.orange  #line:72
+        OOOOO00O0O00O00O0 = tk.Tk()  #line:74
+        OOOOO00O0O00O00O0.title(
+            ' RoboMaster 2020 Summer Camp Algorithm AutoGrader')  #line:75
+        # OOOOO00O0O00O00O0.iconbitmap('../auto_grader/favicon.ico')  #line:76
+        OOOOO00O0O00O00O0.geometry('1000x650')  #line:77
+        OOOOO00O0O00O00O0["background"] = 'white'  #line:78
+        OOOOO00O0O00O00O0.resizable(0, 0)  #line:79
+        O00OOOOOO00OO00O0 = tk.Frame(OOOOO00O0O00O00O0,
+                                     bg=OOO00O000OO00OOOO.blue)  #line:81
+        O00OOOOOO00OO00O0.place(height=5, relwidth=0.25)  #line:82
+        O000OOOO000OO0O0O = tk.Frame(OOOOO00O0O00O00O0,
+                                     bg=OOO00O000OO00OOOO.orange)  #line:83
+        O000OOOO000OO0O0O.place(relx=0.25, height=5, relwidth=0.75)  #line:84
+        O000OO0OO00O00000 = tk.PhotoImage(
+            file='../auto_grader/ROBOMASTER.png')  #line:86
+        OO0OOO0OOOO0O00OO = tk.Label(OOOOO00O0O00O00O0,
+                                     image=O000OO0OO00O00000,
+                                     bg='white')  #line:87
+        OO0OOO0OOOO0O00OO.place(x=28, y=25)  #line:88
+        O0O00OO0O0O000O00 = tk.Frame(OOOOO00O0O00O00O0, bg='white')  #line:90
+        O0O00OO0O0O000O00.place(x=25, y=81, height=546, width=546)  #line:91
+        OOO00O000OO00OOOO.score_label = tk.Label(OOOOO00O0O00O00O0,
                                                  bg='white',
                                                  text='Score 0',
-                                                 fg=OOOO00OO0O00OOO00.gray,
+                                                 fg=OOO00O000OO00OOOO.gray,
                                                  bd=0,
                                                  padx=0,
                                                  pady=0,
                                                  anchor='w',
                                                  font=('Microsoft YaHei UI',
                                                        32, tf.BOLD,
-                                                       tf.ITALIC))  # line:102
-        OOOO00OO0O00OOO00.score_label.place(x=626, y=15, width=306)  # line:103
-        O0O000O0OO0O0000O = tk.scrolledtext.ScrolledText(O00OOO0OOOOOOO0OO,
+                                                       tf.ITALIC))  #line:102
+        OOO00O000OO00OOOO.score_label.place(x=626, y=15, width=306)  #line:103
+        OO0O000OO0O00O0O0 = tk.scrolledtext.ScrolledText(OOOOO00O0O00O00O0,
                                                          width=70,
                                                          font=('微软雅黑',
-                                                               14))  # line:107
-        O0O000O0OO0O0000O.place(x=622, y=87, height=530, width=328)  # line:108
-        sys.stdout = text_redirector(O0O000O0OO0O0000O, 'stdout')  # line:109
-        OOOO00OO0O00OOO00.empty_photo = tk.PhotoImage(
-            file='../auto_grader/empty.png').zoom(2)  # line:112
-        OOOO00OO0O00OOO00.img_button_list = list()  # line:113
-        OOOO00OO0O00OOO00.waitList = list()  # line:114
-        for O0OO000O0OO000O0O in range(8):  # line:115
-            for OOO0000O00OOOO0OO in range(8):  # line:116
-                O0O0O0OO0OO0O00OO = tk.Button(
-                    OOOOOO0OO0O0OOOOO,
+                                                               14))  #line:107
+        OO0O000OO0O00O0O0.place(x=622, y=87, height=530, width=328)  #line:108
+        sys.stdout = text_redirector(OO0O000OO0O00O0O0, 'stdout')  #line:109
+        OOO00O000OO00OOOO.empty_photo = tk.PhotoImage(
+            file='../auto_grader/empty.png').zoom(2)  #line:112
+        OOO00O000OO00OOOO.img_button_list = list()  #line:113
+        OOO00O000OO00OOOO.waitList = list()  #line:114
+        for OO0OOOOOOOO000O0O in range(8):  #line:115
+            for O0O000OOO0OO00O00 in range(8):  #line:116
+                OO00000O0OO00OOOO = tk.Button(
+                    O0O00OO0O0O000O00,
                     bd=2,
                     bg='white',
                     state='disabled',
                     relief='flat',
-                    image=OOOO00OO0O00OOO00.empty_photo,
-                    command=(lambda O00O00O00OO0O0OO0, O00O00O00OOO0OO00:
-                             lambda: OOOO00OO0O00OOO00.click_callback(
-                                 O00O00O00OO0O0OO0, O00O00O00OOO0OO00))(
-                                     O0OO000O0OO000O0O,
-                                     OOO0000O00OOOO0OO))  # line:125
-                O0O0O0OO0OO0O00OO.grid(row=O0OO000O0OO000O0O,
-                                       column=OOO0000O00OOOO0OO,
+                    image=OOO00O000OO00OOOO.empty_photo,
+                    command=(lambda OOO0O00O00O0OOO00, O0OO0OOOO00OOO000:
+                             lambda: OOO00O000OO00OOOO.click_callback(
+                                 OOO0O00O00O0OOO00, O0OO0OOOO00OOO000))(
+                                     OO0OOOOOOOO000O0O,
+                                     O0O000OOO0OO00O00))  #line:125
+                OO00000O0OO00OOOO.grid(row=OO0OOOOOOOO000O0O,
+                                       column=O0O000OOO0OO00O00,
                                        sticky=tk.W + tk.E + tk.N + tk.S,
                                        padx=3,
-                                       pady=3)  # line:130
-                OOOO00OO0O00OOO00.img_button_list.append(
-                    O0O0O0OO0OO0O00OO)  # line:131
-        O00OOO0OOOOOOO0OO.mainloop()  # line:132
+                                       pady=3)  #line:130
+                OOO00O000OO00OOOO.img_button_list.append(
+                    OO00000O0OO00OOOO)  #line:131
+        OOOOO00O0O00O00O0.mainloop()  #line:132
 
-    def load_images(OOO00000OOO00O0OO):  # line:134
-        OOO00000OOO00O0OO.photoes = list()  # line:135
-        for O0O000OOO00OOOOOO in range(64):  # line:136
-            O0O00OOOO0O00OOO0 = tk.PhotoImage(file='../auto_grader/image/' +
-                                              str(O0O000OOO00OOOOOO) +
-                                              '.png').zoom(2)  # line:138
-            OOO00000OOO00O0OO.photoes.append(O0O00OOOO0O00OOO0)  # line:139
-            OOO00000OOO00O0OO.img_button_list[O0O000OOO00OOOOOO].config(
-                image=O0O00OOOO0O00OOO0, state='normal')  # line:140
+    def load_images(O0OOOO000O0OOO000):  #line:134
+        O0OOOO000O0OOO000.photoes = list()  #line:135
+        for OO0O0O0O0OOO0OOOO in range(64):  #line:136
+            O0000O00000O0OOOO = tk.PhotoImage(file='../auto_grader/image/' +
+                                              str(OO0O0O0O0OOO0OOOO) +
+                                              '.png').zoom(2)  #line:138
+            O0OOOO000O0OOO000.photoes.append(O0000O00000O0OOOO)  #line:139
+            O0OOOO000O0OOO000.img_button_list[OO0O0O0O0OOO0OOOO].config(
+                image=O0000O00000O0OOOO, state='normal')  #line:140
 
-    def click_callback(OOO0OO00000O0OOOO, OO0O0O0O00O00OO0O,
-                       O0O0O0O0O0O00O000):  # line:142
-        print(OO0O0O0O00O00OO0O, O0O0O0O0O0O00O000)  # line:143
-        O0O00OOOOOO000OOO = OOO0OO00000O0OOOO.index(
-            OO0O0O0O00O00OO0O, O0O0O0O0O0O00O000)  # line:144
-        if [OO0O0O0O00O00OO0O,
-                O0O0O0O0O0O00O000] in OOO0OO00000O0OOOO.waitList:  # line:145
-            OOO0OO00000O0OOOO.waitList.remove(
-                [OO0O0O0O00O00OO0O, O0O0O0O0O0O00O000])  # line:146
-            OOO0OO00000O0OOOO.img_button_list[O0O00OOOOOO000OOO].config(
-                bg=OOO0OO00000O0OOOO.unselected)  # line:147
-        else:  # line:148
-            OOO0OO00000O0OOOO.waitList.append(
-                [OO0O0O0O00O00OO0O, O0O0O0O0O0O00O000])  # line:149
-            OOO0OO00000O0OOOO.img_button_list[O0O00OOOOOO000OOO].config(
-                bg=OOO0OO00000O0OOOO.selected)  # line:150
-            if (len(OOO0OO00000O0OOOO.waitList) == 2):  # line:151
-                O0O00O000O00O00OO = OOO0OO00000O0OOOO.waitList[1]  # line:152
-                OOO00O0O0000000OO = OOO0OO00000O0OOOO.waitList[0]  # line:153
+    def click_callback(O00OO0OO0OOO00000, OO0O00OO0OO000OOO,
+                       OOOO0OO0OOO0OO00O):  #line:142
+        print(OO0O00OO0OO000OOO, OOOO0OO0OOO0OO00O)  #line:143
+        OO00O0OOOO0O00000 = O00OO0OO0OOO00000.index(
+            OO0O00OO0OO000OOO, OOOO0OO0OOO0OO00O)  #line:144
+        if [OO0O00OO0OO000OOO,
+                OOOO0OO0OOO0OO00O] in O00OO0OO0OOO00000.waitList:  #line:145
+            O00OO0OO0OOO00000.waitList.remove(
+                [OO0O00OO0OO000OOO, OOOO0OO0OOO0OO00O])  #line:146
+            O00OO0OO0OOO00000.img_button_list[OO00O0OOOO0O00000].config(
+                bg=O00OO0OO0OOO00000.unselected)  #line:147
+        else:  #line:148
+            O00OO0OO0OOO00000.waitList.append(
+                [OO0O00OO0OO000OOO, OOOO0OO0OOO0OO00O])  #line:149
+            O00OO0OO0OOO00000.img_button_list[OO00O0OOOO0O00000].config(
+                bg=O00OO0OO0OOO00000.selected)  #line:150
+            if (len(O00OO0OO0OOO00000.waitList) == 2):  #line:151
+                OO0O00OOOO0O0O0O0 = O00OO0OO0OOO00000.waitList[1]  #line:152
+                OO0O0O000OOOOO000 = O00OO0OO0OOO00000.waitList[0]  #line:153
                 _thread.start_new_thread(
-                    OOO0OO00000O0OOOO.link,
-                    (O0O00O000O00O00OO[0], O0O00O000O00O00OO[1],
-                     OOO00O0O0000000OO[0], OOO00O0O0000000OO[1]))  # line:155
+                    O00OO0OO0OOO00000.link,
+                    (OO0O00OOOO0O0O0O0[0], OO0O00OOOO0O0O0O0[1],
+                     OO0O0O000OOOOO000[0], OO0O0O000OOOOO000[1]))  #line:155
 
-    def color(OO00OOOO0OO00OOO0, OO00OO0OOOOOOO00O):  # line:157
-        if OO00OO0OOOOOOO00O == 0:  # line:158
-            return 'RED'  # line:159
-        if OO00OO0OOOOOOO00O == 1:  # line:160
-            return 'GREEN'  # line:161
-        return 'BLUE'  # line:162
+    def color(OO00000OO0OO0O000, OO0OOOO0O00O000O0):  #line:157
+        if OO0OOOO0O00O000O0 == 0:  #line:158
+            return 'RED'  #line:159
+        if OO0OOOO0O00O000O0 == 1:  #line:160
+            return 'GREEN'  #line:161
+        return 'BLUE'  #line:162
 
-    def link(O000OO00O0O0O00OO, O0O00OOO0O000OO00, OOOOO00O000O0OOOO,
-             OO0OO0OO0OO0OO0O0, O0OO0O00OO00OO0OO):  # line:164
-        O000000O0OOOO0O00 = O000OO00O0O0O00OO.index(
-            O0O00OOO0O000OO00, OOOOO00O000O0OOOO)  # line:165
-        OO00O00OOO00O00OO = O000OO00O0O0O00OO.index(
-            OO0OO0OO0OO0OO0O0, O0OO0O00OO00OO0OO)  # line:166
-        if O000OO00O0O0O00OO.enable_ui:  # line:167
-            time.sleep(0.5)  # line:168
-        OOOOO00000O00O00O = O000OO00O0O0O00OO.ls.search(
-            O0O00OOO0O000OO00, OOOOO00O000O0OOOO, OO0OO0OO0OO0OO0O0,
-            O0OO0O00OO00OO0OO)  # line:169
-        if isinstance(OOOOO00000O00O00O, list):  # line:170
-            O000OO00O0O0O00OO.__O0OO0OO0O00OOOO00 += O000OO00O0O0O00OO.scores[
-                5]  # line:171
-            print('Wrong! {0}'.format(O000OO00O0O0O00OO.scores[5]))  # line:172
+    def link(OO0O0OOO00OO0OOOO, OOO0OOO0O00O00000, OO000OOOOO00O0O00,
+             OOOO00O00O0O00O0O, O0O0000O0000OO00O):  #line:164
+        OO00OOO0O00O00O0O = OO0O0OOO00OO0OOOO.index(
+            OOO0OOO0O00O00000, OO000OOOOO00O0O00)  #line:165
+        O0OO00O0OO00O0OOO = OO0O0OOO00OO0OOOO.index(
+            OOOO00O00O0O00O0O, O0O0000O0000OO00O)  #line:166
+        if OO0O0OOO00OO0OOOO.enable_ui:  #line:167
+            time.sleep(0)  #line:168
+        O0O0OOOO0OO0000O0 = OO0O0OOO00OO0OOOO.ls.search(
+            OOO0OOO0O00O00000, OO000OOOOO00O0O00, OOOO00O00O0O00O0O,
+            O0O0000O0000OO00O)  #line:169
+        if isinstance(O0O0OOOO0OO0000O0, list):  #line:170
+            OO0O0OOO00OO0OOOO.__O00O00O0OO00000OO += OO0O0OOO00OO0OOOO.scores[
+                5]  #line:171
+            print('Wrong! {0}'.format(OO0O0OOO00OO0OOOO.scores[5]))  #line:172
             print('{0}, {1} is {2} {3}'.format(
-                O0O00OOO0O000OO00, OOOOO00O000O0OOOO,
-                O000OO00O0O0O00OO.color(OOOOO00000O00O00O[0][0]),
-                OOOOO00000O00O00O[0][1]))  # line:175
+                OOO0OOO0O00O00000, OO000OOOOO00O0O00,
+                OO0O0OOO00OO0OOOO.color(O0O0OOOO0OO0000O0[0][0]),
+                O0O0OOOO0OO0000O0[0][1]))  #line:175
             print('{0}, {1} is {2} {3}'.format(
-                OO0OO0OO0OO0OO0O0, O0OO0O00OO00OO0OO,
-                O000OO00O0O0O00OO.color(OOOOO00000O00O00O[1][0]),
-                OOOOO00000O00O00O[1][1]))  # line:178
-            OOO000O0000OOOO0O = O000OO00O0O0O00OO.wrong_color  # line:179
-        elif OOOOO00000O00O00O == -2:  # line:180
-            O000OO00O0O0O00OO.__O0OO0OO0O00OOOO00 += O000OO00O0O0O00OO.scores[
-                4]  # line:181
+                OOOO00O00O0O00O0O, O0O0000O0000OO00O,
+                OO0O0OOO00OO0OOOO.color(O0O0OOOO0OO0000O0[1][0]),
+                O0O0OOOO0OO0000O0[1][1]))  #line:178
+            O000O0OOOO00000O0 = OO0O0OOO00OO0OOOO.wrong_color  #line:179
+        elif O0O0OOOO0OO0000O0 == -2:  #line:180
+            OO0O0OOO00OO0OOOO.__O00O00O0OO00000OO += OO0O0OOO00OO0OOOO.scores[
+                4]  #line:181
             print('Took more than four lines! {0}'.format(
-                O000OO00O0O0O00OO.scores[4]))  # line:182
-            OOO000O0000OOOO0O = O000OO00O0O0O00OO.wrong_color  # line:183
-        elif OOOOO00000O00O00O == -1:  # line:184
-            O000OO00O0O0O00OO.__O0OO0OO0O00OOOO00 += O000OO00O0O0O00OO.scores[
-                6]  # line:185
+                OO0O0OOO00OO0OOOO.scores[4]))  #line:182
+            O000O0OOOO00000O0 = OO0O0OOO00OO0OOOO.wrong_color  #line:183
+        elif O0O0OOOO0OO0000O0 == -1:  #line:184
+            OO0O0OOO00OO0OOOO.__O00O00O0OO00000OO += OO0O0OOO00OO0OOOO.scores[
+                6]  #line:185
             print('Invalid input! {0}'.format(
-                O000OO00O0O0O00OO.scores[6]))  # line:186
-            OOO000O0000OOOO0O = O000OO00O0O0O00OO.wrong_color  # line:187
-        else:  # line:188
-            O000OO00O0O0O00OO.round += 1  # line:189
-            print('Round', O000OO00O0O0O00OO.round)  # line:190
-            if O000OO00O0O0O00OO.round in [4, 8, 16, 27, 28, 29, 30, 31,
-                                           32]:  # line:191
-                O000OO00O0O0O00OO.__O0OO0OO0O00OOOO00 += O000OO00O0O0O00OO.doublescores[
-                    OOOOO00000O00O00O - 1]  # line:192
+                OO0O0OOO00OO0OOOO.scores[6]))  #line:186
+            O000O0OOOO00000O0 = OO0O0OOO00OO0OOOO.wrong_color  #line:187
+        else:  #line:188
+            OO0O0OOO00OO0OOOO.round += 1  #line:189
+            print('Round', OO0O0OOO00OO0OOOO.round)  #line:190
+            if OO0O0OOO00OO0OOOO.round in [4, 8, 16, 27, 28, 29, 30, 31,
+                                           32]:  #line:191
+                OO0O0OOO00OO0OOOO.__O00O00O0OO00000OO += OO0O0OOO00OO0OOOO.doublescores[
+                    O0O0OOOO0OO0000O0 - 1]  #line:192
                 print('Right! +{0}'.format(
-                    O000OO00O0O0O00OO.doublescores[OOOOO00000O00O00O -
-                                                   1]))  # line:193
-            else:  # line:194
-                O000OO00O0O0O00OO.__O0OO0OO0O00OOOO00 += O000OO00O0O0O00OO.scores[
-                    OOOOO00000O00O00O - 1]  # line:195
+                    OO0O0OOO00OO0OOOO.doublescores[O0O0OOOO0OO0000O0 -
+                                                   1]))  #line:193
+            else:  #line:194
+                OO0O0OOO00OO0OOOO.__O00O00O0OO00000OO += OO0O0OOO00OO0OOOO.scores[
+                    O0O0OOOO0OO0000O0 - 1]  #line:195
                 print('Right! +{0}'.format(
-                    O000OO00O0O0O00OO.scores[OOOOO00000O00O00O -
-                                             1]))  # line:196
-            OOO000O0000OOOO0O = O000OO00O0O0O00OO.right_color  # line:197
+                    OO0O0OOO00OO0OOOO.scores[O0O0OOOO0OO0000O0 -
+                                             1]))  #line:196
+            O000O0OOOO00000O0 = OO0O0OOO00OO0OOOO.right_color  #line:197
         print('Current score =',
-              O000OO00O0O0O00OO.__O0OO0OO0O00OOOO00)  # line:198
-        print('**********************')  # line:199
-        if O000OO00O0O0O00OO.enable_ui:  # line:200
-            O000OO00O0O0O00OO.score_label.config(text='Score {0}'.format(
-                O000OO00O0O0O00OO.__O0OO0OO0O00OOOO00))  # line:201
-            O000OO00O0O0O00OO.img_button_list[O000000O0OOOO0O00].config(
-                bg=OOO000O0000OOOO0O)  # line:202
-            O000OO00O0O0O00OO.img_button_list[OO00O00OOO00O00OO].config(
-                bg=OOO000O0000OOOO0O)  # line:203
-            time.sleep(0.75)  # line:204
-            for O00O0O0OOOO000O0O in O000OO00O0O0O00OO.img_button_list:  # line:205
-                O00O0O0OOOO000O0O.config(
-                    bg=O000OO00O0O0O00OO.unselected)  # line:206
-            O000OO00O0O0O00OO.waitList = []  # line:207
-            if OOOOO00000O00O00O in [1, 2, 3, 4]:  # line:208
-                O000OO00O0O0O00OO.img_button_list[O000000O0OOOO0O00].config(
-                    image=O000OO00O0O0O00OO.empty_photo,
-                    state='disabled')  # line:210
-                O000OO00O0O0O00OO.img_button_list[OO00O00OOO00O00OO].config(
-                    image=O000OO00O0O0O00OO.empty_photo,
-                    state='disabled')  # line:212
-        return OOOOO00000O00O00O  # line:213
+              OO0O0OOO00OO0OOOO.__O00O00O0OO00000OO)  #line:198
+        print('**********************')  #line:199
+        if OO0O0OOO00OO0OOOO.enable_ui:  #line:200
+            OO0O0OOO00OO0OOOO.score_label.config(text='Score {0}'.format(
+                OO0O0OOO00OO0OOOO.__O00O00O0OO00000OO))  #line:201
+            OO0O0OOO00OO0OOOO.img_button_list[OO00OOO0O00O00O0O].config(
+                bg=O000O0OOOO00000O0)  #line:202
+            OO0O0OOO00OO0OOOO.img_button_list[O0OO00O0OO00O0OOO].config(
+                bg=O000O0OOOO00000O0)  #line:203
+            time.sleep(0.75)  #line:204
+            for OOO0O0OOOOOOOOO0O in OO0O0OOO00OO0OOOO.img_button_list:  #line:205
+                OOO0O0OOOOOOOOO0O.config(
+                    bg=OO0O0OOO00OO0OOOO.unselected)  #line:206
+            OO0O0OOO00OO0OOOO.waitList = []  #line:207
+            if O0O0OOOO0OO0000O0 in [1, 2, 3, 4]:  #line:208
+                OO0O0OOO00OO0OOOO.img_button_list[OO00OOO0O00O00O0O].config(
+                    image=OO0O0OOO00OO0OOOO.empty_photo,
+                    state='disabled')  #line:210
+                OO0O0OOO00OO0OOOO.img_button_list[O0OO00O0OO00O0OOO].config(
+                    image=OO0O0OOO00OO0OOOO.empty_photo,
+                    state='disabled')  #line:212
+        return O0O0OOOO0OO0000O0  #line:213
 
 
-class text_redirector():  # line:216
-    def __init__(OO0O00O00000OO000, O00OO0000O00OOO0O,
-                 OO0O0000O0O00O00O):  # line:217
-        OO0O00O00000OO000.widget = O00OO0000O00OOO0O  # line:218
-        OO0O00O00000OO000.tag = OO0O0000O0O00O00O  # line:219
-        OO0O00O00000OO000.flush = sys.stdout.flush  # line:220
+class text_redirector():  #line:216
+    def __init__(O00OO0O0000OOOOOO, OOO000O000000000O,
+                 OO00000OOO000000O):  #line:217
+        O00OO0O0000OOOOOO.widget = OOO000O000000000O  #line:218
+        O00OO0O0000OOOOOO.tag = OO00000OOO000000O  #line:219
+        O00OO0O0000OOOOOO.flush = sys.stdout.flush  #line:220
 
-    def write(OO00O00OO00OOOOO0, OO0OOOOOOOOO000O0):  # line:222
-        OO00O00OO00OOOOO0.widget.configure(state='normal')  # line:223
-        OO00O00OO00OOOOO0.widget.insert('end', OO0OOOOOOOOO000O0,
-                                        (OO00O00OO00OOOOO0.tag, ))  # line:224
-        OO00O00OO00OOOOO0.widget.see(tk.END)  # line:225
-        OO00O00OO00OOOOO0.widget.configure(state='disabled')  # line:226
+    def write(OO00O00O000O0O0OO, OO0O0O00O00O00OOO):  #line:222
+        OO00O00O000O0O0OO.widget.configure(state='normal')  #line:223
+        OO00O00O000O0O0OO.widget.insert('end', OO0O0O00O00O00OOO,
+                                        (OO00O00O000O0O0OO.tag, ))  #line:224
+        OO00O00O000O0O0OO.widget.see(tk.END)  #line:225
+        OO00O00O000O0O0OO.widget.configure(state='disabled')  #line:226
 
 
-if __name__ == "__main__":  # line:229
-    ag = auto_grader()  # line:230
-    import time
-    time.sleep(1e8)
-    # os.system('pause')  #line:231
+if __name__ == "__main__":  #line:229
+    ag = auto_grader()  #line:230
+    os.system('pause')  #line:231
