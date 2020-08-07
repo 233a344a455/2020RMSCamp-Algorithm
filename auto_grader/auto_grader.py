@@ -12,21 +12,23 @@ import read_picture  # line:11
 
 
 class auto_grader:  # line:14
-    def __init__(O0O0O000O0O0O00OO, enable_ui=True):  # line:15
+    def __init__(self, enable_ui=True):  # line:15
         if enable_ui:  # line:16
-            _thread.start_new_thread(O0O0O000O0O0O00OO.ui, tuple())  # line:17
+            _thread.start_new_thread(self.ui, tuple())  # line:17
             time.sleep(1)  # line:18
         OOO00O00O00OO000O = '../mnist_data/t10k-images.idx3-ubyte'  # line:19
         O0O00000OOOOOOOO0 = '../mnist_data/t10k-labels.idx1-ubyte'  # line:20
-        OO0O00OOO0O0O00OO = O0O0O000O0O0O00OO.random_image(
-            OOO00O00O00OO000O, O0O00000OOOOOOOO0)  # line:21
-        O0O0O000O0O0O00OO.load_images()  # line:22
-        O0O0O000O0O0O00OO.ls = link_search(OO0O00OOO0O0O00OO)  # line:23
-        O0O0O000O0O0O00OO.scores = [50, 20, 10, 0, -10, -100, -100]  # line:24
-        O0O0O000O0O0O00OO.doublescores = [100, 20, 10, 0]  # line:25
-        O0O0O000O0O0O00OO.__O0OO0OO0O00OOOO00 = 0  # line:27
-        O0O0O000O0O0O00OO.round = 0  # line:28
-        O0O0O000O0O0O00OO.enable_ui = enable_ui  # line:29
+        self.ans = self.random_image(OOO00O00O00OO000O, O0O00000OOOOOOOO0)  # line:21
+        # self.load_images()  # line:22
+        self.ls = link_search(self.ans)  # line:23
+        self.scores = [50, 20, 10, 0, -10, -100, -100]  # line:24
+        self.doublescores = [100, 20, 10, 0]  # line:25
+        self.__O0OO0OO0O00OOOO00 = 0  # line:27
+        self.round = 0  # line:28
+        self.enable_ui = enable_ui  # line:29
+    
+    def get_ans(self):
+        return self.ans
 
     def random_image(O0O0OO0OOOO0OO0OO, OOO0O0OO00OOO0000,
                      OOOOOOO0000000OO0):  # line:31

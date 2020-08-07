@@ -5,23 +5,23 @@ import math
 import pickle
 
 BATCH_SIZE = 64
-EPOCH = 0
+EPOCH = 2
 
 net = SimpleNet(cross_entropy_loss, Adam(),\
     layers=[
-        FullConnectedLayer(784, 160),
+        FullConnectedLayer(784, 128),
         ReLULayer(),
-        FullConnectedLayer(160, 160),
+        FullConnectedLayer(128, 128),
         DropoutLayer(0.4),
         ReLULayer(),
-        FullConnectedLayer(160, 32),
+        FullConnectedLayer(128, 32),
         DropoutLayer(0.4),
         ReLULayer(),
         FullConnectedLayer(32, 10),
         SoftmaxLayer()
     ])
 
-net = load_network('../models/net_160-32_10_98.16.pkl')
+# net = load_network('../models/net_160-32_10_98.16.pkl')
 
 with open('mnist_dataset.pkl', 'rb') as f:
     train_dataset, eval_dataset = pickle.load(f)
@@ -41,4 +41,4 @@ for pack in dataloader:
         acc = eval(*eval_dataset)
         print("Epoch %s | Iteration %s | Loss %.4f | Acc %s" %(dataloader.epoch_cnt, dataloader.iter_cnt, loss, acc))
 
-# save_network(net, 'net.pkl')
+save_network(net, 'net.pkl')

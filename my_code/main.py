@@ -10,7 +10,8 @@ from auto_grader import auto_grader
 sys.path.append("./net/")
 import simple_net
 
-net = simple_net.load_network('./models/net_128-128_98.1.pkl')
+net1 = simple_net.load_network('./models/net_160-32_10_98.16.pkl')
+net2 = simple_net.load_network('./models/net_128-128_98.1.pkl')
 
 ag = auto_grader()
 
@@ -25,9 +26,21 @@ for idx in range(64):
             img_list.append(img_arr.flatten())
             break
 
-pred = net.predict(np.array(img_list, dtype=np.float) / 255)
+img_list = np.array(img_list, dtype=np.float) / 255
 
-print(np.reshape(simple_net.one_hot_decode(pred), (8, 8)))
-print(np.reshape(colour, (8, 8)))
+raw_pred = net1.predict(img_list) * 1.3 + net2.predict(img_list)
+
+pred = np.reshape(simple_net.one_hot_decode(raw_pred), (8, 8))
+colour = np.reshape(colour, (8, 8))
+
+main_map = (colour + 1) * (pred + 1)
+
+unique, counts = np.unique(main_map, return_counts=True)
+print(counts)
+print(np.sum(counts % 2 != 0))
+
+print(pred)
+print(colour)
+print(main_map)
 
 time.sleep(1e8)
