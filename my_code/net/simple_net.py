@@ -20,7 +20,10 @@ class SimpleNet():
         """
         data = np.expand_dims(data, axis=-1) # (batch, in_features) -> (batch, in_features, 1)
         for layer in [l for l in self.layers if not (isinstance(l, DropoutLayer) and not train)]:
-            data = layer.forward(data)
+            if  isinstance(layer, BatchNormLayer):
+                data = layer.forward(data, train)
+            else:
+                data = layer.forward(data)
         if train:
             return data
         else:
@@ -126,7 +129,7 @@ class BatchNormLayer():
         # self.d_gamma = None
         # self.d_beta = None
 
-    def forward(self, inp, train=True):
+    def forward(self, inp, train):
         inp = inp[...,0]
         self.prev_inp = inp
         
