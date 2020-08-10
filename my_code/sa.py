@@ -1,53 +1,9 @@
+
 import random
 import numpy as np
-# import itertools
-
-# def SA():
-#     # init path
-#     path = list(range(1, 36))
-
-#     # notes
-#     # q = 0.98, tb = 6000, te = T_begin * (q ** 300), m_l = 1000
-#     # q = 0.99, tb = 3000, te = T_begin * (q ** 400), m_l = 1000
-
-#     # Cool down speed
-#     q = 0.99
-
-#     T_begin = 3000.0
-#     T_end = T_begin * (q ** 400)
-#     T = T_begin
-
-#     # Iteration per Temp
-#     mapkob_len = 2000
-
-#     # global min_path_len
-#     # min_path_len = []
-
-#     best_path_l = 1e8
-
-#     while T > T_end:
-#         for _ in range(mapkob_len):
-
-#             new_path = create_new_path(path)
-#             path_l = path_len(path)
-#             new_path_l = path_len(new_path)
-#             df = new_path_l - path_l
-
-#             if df < 0:
-#                 path = new_path[:]
-#                 if path_l < best_path_l:
-#                     best_path = path[:]
-#                     best_path_l = path_l
-
-#             elif math.exp(-df/T) > random.random():
-#                 path = new_path[:]
-
-#         T *= q
-
-#     best_path.insert(0, 0)
-#     return best_path, best_path_l / 1000.0
-
-
+import math
+import itertools
+import matplotlib.pyplot as plt
 
 
 class LinkSearch():
@@ -147,16 +103,18 @@ def generate_map():
     sample_list = random.choices(range(1, 30), k=32) * 2
     return np.array(sample_list, dtype=np.int).reshape(8, 8)
 
-map_orig = np.pad(generate_map(), ((1,1),(1,1)), 'constant', constant_values=(0,0))
 
-rand_list = [(x, y) for x in range(1, 10) for y in range(1, 10)]
-def create_new_path():
-    global rand_list
+
+def create_new_path(map_orig, rand_list):
     ls.map = map_orig.copy()
-    rand_range_len = random.randrange(0, 8)
-    a = random.randrange(0, 64 - rand_range_len)
-    b = a + rand_range_len
-    rand_list[a:b] = random.sample(rand_list[a:b], k=rand_range_len)
+    # rand_range_len = random.randrange(5, 15)
+    # a = random.randrange(0, 64 - rand_range_len)
+    # b = a + rand_range_len
+    # rand_list[a:b] = random.sample(rand_list[a:b], k=rand_range_len)
+    for _ in range(3):
+        a = random.randrange(0, 64)
+        b = random.randrange(0, 64)
+        rand_list[a], rand_list[b] = rand_list[b], rand_list[a]
 
     score = 0
     path = []
@@ -165,19 +123,81 @@ def create_new_path():
         num = ls.map[x, y]
         if num == 0:
             continue
-        
-        for p2 in np.argwhere(ls.map == num):
-            s = ls.search_link(x, y, *p2)
+
+        sl, pl = [], []
+        for p in np.argwhere(ls.map == num):
+            s = ls.search_link(x, y, *p)
             if s is not None:
-                ls.link(x, y, *p2)
-                path.append([x, y, p2[0], p2[1]])
-                score += s
-        
-    if ls.is_all_empty:
-        return path, score
+                sl.append(s)
+                pl.append(p)
+
+        if len(sl):
+            idx = sl.index(max(sl))
+            path.append([x-1, y-1, pl[idx][0]-1, pl[idx][1]-1])
+            ls.link(x, y, pl[idx][0], pl[idx][1])
+            score += sl[idx]
+    
+    if ls.is_all_empty():
+        return score, path, rand_list
     else:
         return None
 
-for _ in range(20):
-    # print(create_new_path())
-    pass
+
+score_list = []
+def simulated_annealing(map_orig):
+
+    best_path = None
+    best_score = 0
+
+    # Cool down speed
+    q = 0.98
+
+    T_begin = 50
+    T_end = 1
+    T = T_begin
+
+    # Iteration per Temp
+    mapkob_len = 50
+
+    # init path
+    rand_list = [(x, y) for x in range(1, 10) for y in range(1, 10)]
+    score = 0
+
+
+    while T > T_end:
+        for _ in range(mapkob_len):
+            
+            ret = None
+            while ret is None:
+                ret = create_new_path(map_orig.copy(), rand_list.copy())
+            new_score, new_path, new_rand_list = ret
+
+            df = score - new_score
+
+            if df < 0:
+                path = new_path
+                score = new_score
+                rand_list = new_rand_list
+
+                if score > best_score:
+                    best_score, best_path = score, path
+
+            elif math.exp(-df/T) > random.random():
+                path = new_path
+                score = new_score
+                rand_list = new_rand_list
+            
+            score_list.append(score)
+        
+        plt.clf()
+        plt.plot(score_list)
+        plt.pause(0.05)
+        print(score)
+
+        T *= q
+
+    return best_score, best_path
+
+if __name__ == "__main__":
+    map_orig = np.pad(generate_map(), ((1,1),(1,1)), 'constant', constant_values=(0,0))
+    simulated_annealing(map_orig)

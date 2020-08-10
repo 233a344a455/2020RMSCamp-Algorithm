@@ -11,7 +11,7 @@ import sys
 sys.path.append('../auto_grader')
 import auto_grader
 
-PREDC = 1
+PREDC = 10
 
 def packbits(bool_array):
     bits = 0
@@ -161,7 +161,7 @@ class Astar():
  
     def remove_unvisited_pos(self, last_unvisited_pos, x1, y1, x2, y2):
             unvisited_pos = unpackbits(last_unvisited_pos)
-            # print(np.sum(unvisited_pos))
+            print(np.sum(unvisited_pos))
             if not unvisited_pos.any():
                 print("End!!!")
                 exit()
@@ -173,9 +173,6 @@ class Astar():
         init_node = Node(None, None, packbits(np.ones(64, dtype=np.bool)), 0)
         heapq.heappush(self.priority_heap, init_node)
         while len(self.priority_heap):
-            # l = len(self.visited_nodes)
-            # if l % 100 == 0:
-            #     print(l)
             n = heapq.heappop(self.priority_heap)
             self.find_available_nodes(n)
 
