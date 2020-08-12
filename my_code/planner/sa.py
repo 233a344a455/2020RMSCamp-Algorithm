@@ -79,19 +79,14 @@ class LinkSearch():
         if x1 == x2 and y1 == y2:
             return None
         if self.direct(x1, y1, x2, y2):
-            # print('1 line.') 50
             return 50
         elif self.one_corner(x1, y1, x2, y2):
-            # print('2 lines.') 20
             return 20
         elif self.two_corner(x1, y1, x2, y2):
-            # print('3 lines.') 10
             return 10
         elif self.three_corner(x1, y1, x2, y2):
-            # print('4 lines.') 0
             return 0
         else:
-            # print('more than 4 lines.')
             return None
     
     def is_all_empty(self):
@@ -99,19 +94,12 @@ class LinkSearch():
 
 ls = LinkSearch()
 
-def generate_map():
-    sample_list = random.choices(range(1, 30), k=32) * 2
-    return np.array(sample_list, dtype=np.int).reshape(8, 8)
-
-
 
 def create_new_path(map_orig, rand_list):
     ls.map = map_orig.copy()
-    # rand_range_len = random.randrange(5, 15)
-    # a = random.randrange(0, 64 - rand_range_len)
-    # b = a + rand_range_len
-    # rand_list[a:b] = random.sample(rand_list[a:b], k=rand_range_len)
-    for _ in range(3):
+
+    # Create new rand list
+    for _ in range(5):
         a = random.randrange(0, 64)
         b = random.randrange(0, 64)
         rand_list[a], rand_list[b] = rand_list[b], rand_list[a]
@@ -136,6 +124,9 @@ def create_new_path(map_orig, rand_list):
             path.append([x-1, y-1, pl[idx][0]-1, pl[idx][1]-1])
             ls.link(x, y, pl[idx][0], pl[idx][1])
             score += sl[idx]
+            # 第4次，第8次，第16次，第28，29，30，31，32次配对
+            if len(path) in (4, 8, 16, 28, 29, 30, 31, 32) and sl[idx] == 50:
+                score += 50
     
     if ls.is_all_empty():
         return score, path, rand_list
@@ -144,32 +135,23 @@ def create_new_path(map_orig, rand_list):
 
 
 score_list = []
-def simulated_annealing(map_orig):
+def simulated_annealing(map_orig, q = 0.98, T_begin = 50, T_end = 5, mapkob_len = 50):
 
     best_path = None
     best_score = 0
-
-    # Cool down speed
-    q = 0.98
-
-    T_begin = 50
-    T_end = 1
     T = T_begin
-
-    # Iteration per Temp
-    mapkob_len = 50
-
-    # init path
     rand_list = [(x, y) for x in range(1, 10) for y in range(1, 10)]
     score = 0
 
+    last_ret = None
+    ret = None
 
     while T > T_end:
         for _ in range(mapkob_len):
             
-            ret = None
-            while ret is None:
-                ret = create_new_path(map_orig.copy(), rand_list.copy())
+            while ret is None or ret == last_ret:
+                ret = create_new_path(map_orig, rand_list.copy())
+            last_ret = ret
             new_score, new_path, new_rand_list = ret
 
             df = score - new_score
@@ -197,6 +179,10 @@ def simulated_annealing(map_orig):
         T *= q
 
     return best_score, best_path
+
+def generate_map():
+    sample_list = random.choices(range(1, 30), k=32) * 2
+    return np.array(sample_list, dtype=np.int).reshape(8, 8)
 
 if __name__ == "__main__":
     map_orig = np.pad(generate_map(), ((1,1),(1,1)), 'constant', constant_values=(0,0))

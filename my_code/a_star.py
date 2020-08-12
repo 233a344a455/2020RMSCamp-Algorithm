@@ -6,24 +6,28 @@ import heapq
 import bisect
 import random
 from functools import total_ordering
+import numba as nb
+from numba import njit
 
 import sys
 sys.path.append('../auto_grader')
 import auto_grader
 
-PREDC = 10
+PREDC = 1
 
+@nb.jit(nopython=True)
 def packbits(bool_array):
     bits = 0
     for idx, bit in enumerate(bool_array):
         bits += bit << idx
     return bits
 
+@nb.jit(nopython=True)
 def unpackbits(bits):
     bool_array = []
     for idx in range(64):
         bool_array.append((bits >> idx) & 1)
-    return np.array(bool_array, dtype=np.bool)
+    return bool_array
 
 
 
@@ -105,10 +109,10 @@ class LinkSearch():
             return 2
         elif self.two_corner(x1, y1, x2, y2):
             # print('3 lines.') 10
-            return 5
+            return 3
         elif self.three_corner(x1, y1, x2, y2):
             # print('4 lines.') 0
-            return 10
+            return 4
         else:
             # print('more than 4 lines.')
             return None
@@ -160,8 +164,8 @@ class Astar():
                         bisect.insort(self.visited_nodes, unvisited_pos)
  
     def remove_unvisited_pos(self, last_unvisited_pos, x1, y1, x2, y2):
-            unvisited_pos = unpackbits(last_unvisited_pos)
-            print(np.sum(unvisited_pos))
+            unvisited_pos =  np.array(unpackbits(last_unvisited_pos), dtype=np.bool)
+            # print(np.sum(unvisited_pos))
             if not unvisited_pos.any():
                 print("End!!!")
                 exit()
