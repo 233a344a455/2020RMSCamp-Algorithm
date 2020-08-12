@@ -3,21 +3,12 @@ import random
 import time
 
 ###################################################################
-
-class MyLinkSearch():
-    def __init__(self, map_, auto_grader=None):
-        self.auto_grader = auto_grader
-        self.pretreat(map_)
+class LinkSearch():
+    def __init__(self, map_=None):
+        self.map = map_
 
     def link(self, x1, y1, x2, y2):
-            print("Linked (%s, %s) to (%s, %s)." % (x1, y1, x2, y2))
-            if self.auto_grader:
-                ret = self.auto_grader.link(x1-1, y1-1, x2-1, y2-1)
-                self.map[x1, y1] = self.map[x2, y2] = 0
-                if ret > 0:
-                    return ret
-                else:
-                    raise Exception("ret == %s" %ret)
+        self.map[x1, y1] = self.map[x2, y2] = 0
 
     def direct(self, x1, y1, x2, y2):
         if x1 == x2 and y1 == y2:
@@ -88,54 +79,15 @@ class MyLinkSearch():
         if x1 == x2 and y1 == y2:
             return None
         if self.direct(x1, y1, x2, y2):
-            print('1 line.')
             return 50
         elif self.one_corner(x1, y1, x2, y2):
-            print('2 lines.')
             return 20
         elif self.two_corner(x1, y1, x2, y2):
-            print('3 lines.')
             return 10
         elif self.three_corner(x1, y1, x2, y2):
-            print('4 lines.')
             return 0
         else:
-            print('more than 4 lines.')
             return None
     
-    def pretreat(self, map_):
-        self.map = np.pad(map_,((1,1),(1,1)),'constant',constant_values = (0,0)) 
-
-###################################################################
-
-def generate_map():
-    sample_list = random.choices(range(1, 30), k=32) * 2
-    return np.array(sample_list, dtype=np.int).reshape(8, 8)
-
-if __name__ == "__main__":
-
-    main_map = generate_map()
-    ls = MyLinkSearch(main_map)
-
-    score = 0
-    while main_map.any():
-        for x in range(1, 10):
-            for y in range(1, 10):
-                num = main_map[x, y]
-                if num == 0:
-                    continue
-                
-                max_sco, maxidx = -1, None
-                for p2 in np.argwhere(main_map == num):
-                    s = search_link(x, y, *p2)
-                    if s is not None:
-                        if s > max_sco:
-                            max_sco, maxidx = s, p2
-
-                if maxidx is not None:
-                    score += max_sco
-                    link(x, y, *maxidx)
-                    print(main_map)
-                    continue
-
-    print(score)
+    def is_all_empty(self):
+        return not self.map.any()

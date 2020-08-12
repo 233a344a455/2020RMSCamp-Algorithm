@@ -5,7 +5,7 @@ import random
 import math
 
 BATCH_SIZE = 32
-EPOCH = 0
+EPOCH = 10
 
 loss_list = []
 acc_list = []
@@ -23,7 +23,7 @@ acc_list = []
 #         SoftmaxLayer()
 #     ])
 
-net = load_network('nets/net_128-128_98.1.pkl')
+# net = load_network('nets/net_128-128_98.1.pkl')
 
 data, labels = read_picture.read_image_data('../mnist_data/train-images.idx3-ubyte', '../mnist_data/train-labels.idx1-ubyte')
 data = np.reshape(data, (60000, 784)).astype(np.float) / 255
