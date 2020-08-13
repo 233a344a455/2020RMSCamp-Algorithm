@@ -15,5 +15,5 @@ eval_labels = np.eye(10)[eval_labels]
 
 dataset = [[train_data, train_labels], [eval_data, eval_labels]]
 
-with open('mnist_dataset.pkl', 'wb') as f:
+with open('net/mnist_dataset.pkl', 'wb') as f:
     pickle.dump(dataset, f)

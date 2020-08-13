@@ -6,6 +6,7 @@ import sys
 sys.path.append('../auto_grader')
 import auto_grader
 
+sys.path.append("./planner/")
 from sa import simulated_annealing
 
 ag = auto_grader.auto_grader()

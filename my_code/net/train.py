@@ -1,35 +1,36 @@
 from simple_net import *
-import matplotlib.pyplot as plt
 import numpy as np
 import random
 import math
+import pickle
 
-BATCH_SIZE = 32
-EPOCH = 10
+BATCH_SIZE = 64
+EPOCH = 2
 
-loss_list = []
-acc_list = []
-# plt.ion()
+net = SimpleNet(cross_entropy_loss, Adam(),\
+    layers=[
+        FullConnectedLayer(784, 160),
+        LeakyReLULayer(),
+        
+        FullConnectedLayer(160, 64),
+        BatchNormLayer(64),
+        DropoutLayer(0.4),
+        LeakyReLULayer(),
 
-# net = SimpleNet(cross_entropy_loss, Adam(),\
-#     layers=[
-#         FullConnectedLayer(784, 100),
-#         DropoutLayer(0.3),
-#         ReLULayer(),
-#         FullConnectedLayer(100, 100),
-#         DropoutLayer(0.3),
-#         ReLULayer(),
-#         FullConnectedLayer(100, 10),
-#         SoftmaxLayer()
-#     ])
+        FullConnectedLayer(64, 64),
+        BatchNormLayer(64),
+        DropoutLayer(0.4),
+        LeakyReLULayer(),
 
-# net = load_network('nets/net_128-128_98.1.pkl')
+        FullConnectedLayer(64, 10),
+        SoftmaxLayer()
+    ])
 
-data, labels = read_picture.read_image_data('../mnist_data/train-images.idx3-ubyte', '../mnist_data/train-labels.idx1-ubyte')
-data = np.reshape(data, (60000, 784)).astype(np.float) / 255
-labels = one_hot_encode(labels, 10)
 
-dataloader = DataLoader(data[:55000], labels[:55000], BATCH_SIZE, EPOCH)
+with open('mnist_dataset.pkl', 'rb') as f:
+    train_dataset, eval_dataset = pickle.load(f)
+
+dataloader = DataLoader(*train_dataset, BATCH_SIZE, EPOCH)
 
 def eval(eval_data, eval_labels):
     a = np.argmax(eval_labels, axis=1)
@@ -39,17 +40,9 @@ def eval(eval_data, eval_labels):
 for pack in dataloader:
     loss = net.train(*pack)
     
-    net.optimizer.lr = 0.01 + 0.01 *  np.cos(dataloader.iter_cnt / ( 55000 / BATCH_SIZE ) * 2 * np.pi)
     if dataloader.iter_cnt % 50 == 0:
-        acc = eval(data[55000:55100], labels[55000:55100])
+        net.optimizer.lr = 0.0015 + 0.001 *  np.sin(dataloader.iter_cnt / ( 60000 / BATCH_SIZE ) * 2 * np.pi)
+        acc = eval(*eval_dataset)
         print("Epoch %s | Iteration %s | Loss %.4f | Acc %s" %(dataloader.epoch_cnt, dataloader.iter_cnt, loss, acc))
-        loss_list.append(loss)
-        acc_list.append(acc)
-        # plt.plot(loss_list, color='blue')
-        # plt.plot(acc_list, color='yellow')
-        # plt.show()
-        # plt.pause(0.01)
-        # plt.clf()
 
-
-# save_network(net, 'net.pkl')
+save_network(net, 'net.pkl')

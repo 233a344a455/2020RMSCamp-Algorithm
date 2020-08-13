@@ -12,7 +12,7 @@ import simple_net
 
 net = simple_net.load_network('./models/net.pkl')
 
-ag = auto_grader(False)
+ag = auto_grader()
 
 colour_map = []
 img_list = []
@@ -43,3 +43,5 @@ if len(wrong_idx):
         print("idx: %s, pred %s, target %s" %(idx, num_map[idx[0], idx[1]], true_num_map[idx[0], idx[1]]))
 else:
     print("All correct.")
+
+time.sleep(1e5)

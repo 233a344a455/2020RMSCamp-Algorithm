@@ -3,7 +3,13 @@ import random
 import numpy as np
 import math
 import itertools
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    have_matplotlib = False
+else:
+    have_matplotlib = True
+    # plt.ion()
 
 from my_link_search import LinkSearch
 ls = LinkSearch()
@@ -12,10 +18,10 @@ def create_new_path(map_orig, rand_list):
     ls.map = map_orig.copy()
 
     # Create new rand list
-    for _ in range(5):
-        a = random.randrange(0, 64)
-        b = random.randrange(0, 64)
-        rand_list[a], rand_list[b] = rand_list[b], rand_list[a]
+    # for _ in range(1):
+    a = random.randrange(0, 64)
+    b = random.randrange(0, 64)
+    rand_list[a], rand_list[b] = rand_list[b], rand_list[a]
 
     score = 0
     path = []
@@ -48,7 +54,7 @@ def create_new_path(map_orig, rand_list):
 
 
 score_list = []
-def simulated_annealing(map_orig, q = 0.98, T_begin = 50, T_end = 5, mapkob_len = 50):
+def simulated_annealing(map_orig, q = 0.975, T_begin = 200, T_end = 1, mapkob_len = 50):
 
     map_orig = np.pad(map_orig, ((1,1),(1,1)),'constant',constant_values = (0,0)) 
 
@@ -86,11 +92,13 @@ def simulated_annealing(map_orig, q = 0.98, T_begin = 50, T_end = 5, mapkob_len 
             
             score_list.append(score)
         
-        plt.clf()
-        plt.plot(score_list)
-        plt.pause(0.05)
-        # print(score)
-
+        if have_matplotlib:
+            plt.clf()
+            plt.plot(score_list)
+            plt.pause(0.05)
+        else:
+            print(score)
+        # print(best_score)
         T *= q
 
     return best_score, best_path
