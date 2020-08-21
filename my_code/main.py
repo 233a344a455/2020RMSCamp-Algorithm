@@ -57,14 +57,14 @@ elif len(wrong_value) == 2:
     print("Waring: idx %s: Corrected %s to %s." %(min_pro_idx, min_pro_value, correct_value))
     main_map[min_pro_idx[0], min_pro_idx[1]] = correct_value
 
-print(main_map)
-print("Map generated. Start path planning...")
+# print(main_map)
+# print("Map generated. Start path planning...")
 
-sco, path = simulated_annealing(main_map)
+# sco, path = simulated_annealing(main_map)
 
-print("Finished path planning. Score:", sco)
-print("Path:", path)
-for l in path:
-    ag.link(*l)
+# print("Finished path planning. Score:", sco)
+# print("Path:", path)
+# for l in path:
+#     ag.link(*l)
 
 time.sleep(1e8)

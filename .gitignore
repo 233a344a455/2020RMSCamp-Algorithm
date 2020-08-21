@@ -2,4 +2,3 @@
 .vscode
 */__pycache__
 */mnist_dataset.pkl
-*.pkl
